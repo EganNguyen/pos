@@ -35,7 +35,7 @@ const productsByCategory: Record<string, any[]> = {
     },
     {
       id: "rice-2",
-      image: "/egg-rice.png",
+      image: "/egg-rice.jpg",
       name: "Egg Rice",
       price: "55,000 VND",
     },
@@ -43,13 +43,13 @@ const productsByCategory: Record<string, any[]> = {
   "Side Dish": [
     {
       id: "side-1",
-      image: "/tempura.png",
+      image: "/tempura.jpg",
       name: "Tempura",
       price: "20,000 VND",
     },
     {
       id: "side-2",
-      image: "/tonkatsu.png",
+      image: "/tonkatsu.jpg",
       name: "Tonkatsu",
       price: "35,000 VND",
     },
@@ -57,7 +57,7 @@ const productsByCategory: Record<string, any[]> = {
   Specialty: [
     {
       id: "Specialty-1",
-      image: "/ramen.png",
+      image: "/ramen.jpg",
       name: "Special Ramen",
       price: "100,000 VND",
     },
@@ -65,13 +65,13 @@ const productsByCategory: Record<string, any[]> = {
   Drink: [
     {
       id: "drink-1",
-      image: "/cola.png",
+      image: "/coca.jpg",
       name: "Coca Cola",
       price: "20,000 VND",
     },
     {
       id: "drink-2",
-      image: "/tea.png",
+      image: "/matcha.jpg",
       name: "Green Tea",
       price: "30,000 VND",
     },
