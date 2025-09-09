@@ -25,7 +25,7 @@ const fetchProductsByCategory = (category: string) => {
 };
 
 // Fake API function to complete order
-const completeOrderApi = (cart: any[]) => {
+const completeOrderApi = (_cart: any[]) => {
   return new Promise<boolean>((resolve) => {
     const success = true; // Simulate always successful
     resolve(success);
@@ -33,7 +33,7 @@ const completeOrderApi = (cart: any[]) => {
 };
 
 // Fake API to get toppings for a product
-const fetchToppingsByProduct = (productId: string) => {
+const fetchToppingsByProduct = (_productId: string) => {
   return new Promise((resolve) => {
     const toppings = [
       {
