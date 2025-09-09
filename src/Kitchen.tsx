@@ -1,47 +1,43 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 
-// Fake API function for a Ramen restaurant with 9 tables
-const fetchKitchenData = () => {
-  return new Promise((resolve) => {
-    resolve({
-      tables: [
-        { id: 1, name: "Table 1" },
-        { id: 2, name: "Table 2" },
-        { id: 3, name: "Table 3" },
-        { id: 4, name: "Table 4" },
-        { id: 5, name: "Table 5" },
-        { id: 6, name: "Table 6" },
-        { id: 7, name: "Table 7" },
-        { id: 8, name: "Table 8" },
-        { id: 9, name: "Table 9" },
-        { id: 10, name: "Take away 1" },
-        { id: 11, name: "Take away 2" },
-      ],
-      products: [
-        { id: 1, name: "Shoyu Ramen", tableId: 1, status: "Cooking", toppings: ["Nori", "Chashu", "Scallions"] },
-        { id: 2, name: "Miso Ramen", tableId: 1, status: "Cooking", toppings: ["Corn", "Butter", "Bean Sprouts"] },
-        { id: 3, name: "Spicy Ramen", tableId: 2, status: "Cooking", toppings: ["Chili Oil", "Chashu", "Soft Boiled Egg"] },
-        { id: 4, name: "Tonkotsu Ramen", tableId: 3, status: "Cooking", toppings: ["Chashu", "Nori", "Mushrooms"] },
-        { id: 5, name: "Gyoza", tableId: 2, status: "Cooking", toppings: [] },
-        { id: 6, name: "Karaage", tableId: 4, status: "Cooking", toppings: [] },
-        { id: 7, name: "Green Tea", tableId: 5, status: "Ready", toppings: [] },
-        { id: 8, name: "Chashu Don", tableId: 6, status: "Cooking", toppings: ["Chashu", "Scallions"] },
-        { id: 9, name: "Shio Ramen", tableId: 7, status: "Cooking", toppings: ["Nori", "Soft Boiled Egg", "Spinach"] },
-        { id: 10, name: "Soft Drink", tableId: 8, status: "Ready", toppings: [] },
-        { id: 11, name: "Miso Ramen", tableId: 9, status: "Cooking", toppings: ["Corn", "Butter", "Bean Sprouts"] },
-        { id: 12, name: "Karaage", tableId: 9, status: "Cooking", toppings: [] },
-        { id: 13, name: "Miso Ramen", tableId: 10, status: "Cooking", toppings: ["Corn", "Butter", "Bean Sprouts"] },
-        { id: 14, name: "Miso Ramen", tableId: 11, status: "Cooking", toppings: ["Corn", "Butter", "Bean Sprouts"] },
-      ],
-    });
-  });
+// Fetch kitchen data from Supabase Edge Function
+const fetchKitchenData = async () => {
+  try {
+    const response = await fetch(
+      "https://gsymrhydnwutflpnzkid.supabase.co/functions/v1/load-ordering",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Error fetching kitchen data: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    // Normalize toppings (parse string into array)
+    const normalizedProducts = data.products.map((p: any) => ({
+      ...p,
+      toppings: typeof p.toppings === "string" ? JSON.parse(p.toppings) : p.toppings,
+    }));
+
+    return { tables: data.tables, products: normalizedProducts };
+
+  } catch (err) {
+    console.error(err);
+    return { tables: [], products: [] }; // fallback
+  }
 };
 
 
 function Kitchen() {
-  const [tables, setTables] = useState([]);
-  const [products, setProducts] = useState([]);
+  const [tables, setTables] = useState<any[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -52,13 +48,40 @@ function Kitchen() {
     });
   }, []);
 
-  const handleStatusChange = (productId) => {
-    setProducts((prevProducts) =>
-      prevProducts.map((p) =>
-        p.id === productId ? { ...p, status: "Completed" } : p
-      )
+const handleStatusChange = async (productId: number) => {
+  try {
+    const response = await fetch(
+      "https://gsymrhydnwutflpnzkid.supabase.co/functions/v1/complete-order",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ order_id: productId }),
+      }
     );
-  };
+
+    if (!response.ok) {
+      throw new Error(`Failed to update status: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    if (result.success) {
+      // ✅ update local state
+      setProducts((prevProducts) =>
+        prevProducts.map((p) =>
+          p.id === productId ? { ...p, status: "Completed" } : p
+        )
+      );
+    } else {
+      console.error("API error:", result.message);
+    }
+  } catch (err) {
+    console.error("Error updating order:", err);
+  }
+};
+
 
   if (loading) {
     return (
@@ -91,19 +114,29 @@ function Kitchen() {
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {products
-                  .filter((p) => p.tableId === table.id)
+                  .filter((p) => p.table === table.id) // ✅ changed from tableId → table
                   .map((product) => (
                     <tr key={product.id}>
                       <td className="px-4 py-2 text-gray-700">{product.name}</td>
-                      <td className="px-4 py-2 text-gray-700">{product.toppings.join(", ") || "-"}</td>
+                      <td className="px-4 py-2 text-gray-700">
+                        {Array.isArray(product.toppings) && product.toppings.length > 0
+                          ? product.toppings
+                            .map((t: any) =>
+                              typeof t === "string"
+                                ? t
+                                : `${t.name} (x${t.quantity || 1})`
+                            )
+                            .join(", ")
+                          : "-"}
+                      </td>
+
                       <td
-                        className={`px-4 py-2 font-semibold ${
-                          product.status === "Cooking"
+                        className={`px-4 py-2 font-semibold ${product.status === "Cooking"
                             ? "text-green-600"
                             : product.status === "Completed"
-                            ? "text-gray-400"
-                            : "text-yellow-600"
-                        }`}
+                              ? "text-gray-400"
+                              : "text-yellow-600"
+                          }`}
                       >
                         {product.status}
                       </td>

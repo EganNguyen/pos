@@ -18,26 +18,43 @@ function Report() {
   const [startDate, setStartDate] = useState<string>("2025-09-01");
   const [endDate, setEndDate] = useState<string>("2025-09-30");
 
-  // Fake API to fetch monthly report
+  // ✅ Real API call
   const fetchMonthlyProducts = async () => {
-    return new Promise<Product[]>((resolve) => {
-      setTimeout(() => {
-        resolve([
-          { id: 1, name: "Tonkotsu Ramen", category: "Ramen", quantity: 30, price: 85000 },
-          { id: 2, name: "Shoyu Ramen", category: "Ramen", quantity: 25, price: 75000 },
-          { id: 3, name: "Katsu Don", category: "Rice", quantity: 20, price: 95000 },
-          { id: 4, name: "Gyoza", category: "Side Dish", quantity: 40, price: 45000 },
-          { id: 5, name: "Matcha Latte", category: "Drink", quantity: 15, price: 55000 },
-        ]);
-      }, 1000);
-    });
+    try {
+      const response = await fetch(
+        "https://gsymrhydnwutflpnzkid.supabase.co/functions/v1/load-ordered",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch report data");
+      }
+
+      const data = await response.json();
+
+      // Transform products from API to match Product type
+      const mappedProducts: Product[] = data.products.map((p: any) => ({
+        id: p.id,
+        name: p.name,
+        quantity: p.quantity,
+        price: p.price,
+      }));
+
+      setProducts(mappedProducts);
+    } catch (error) {
+      console.error("Error fetching monthly products:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    fetchMonthlyProducts().then((data) => {
-      setProducts(data);
-      setLoading(false);
-    });
+    fetchMonthlyProducts();
   }, []);
 
   // Calculate summary
@@ -107,10 +124,8 @@ function Report() {
             <tr className="bg-gray-50 text-gray-700">
               <th className="py-3 px-4 border-b">#</th>
               <th className="py-3 px-4 border-b">Product</th>
-              <th className="py-3 px-4 border-b">Category</th>
               <th className="py-3 px-4 border-b">Quantity</th>
-              <th className="py-3 px-4 border-b">Price (VND)</th>
-              <th className="py-3 px-4 border-b">Revenue</th>
+              <th className="py-3 px-4 border-b">Revenue (VND)</th>
             </tr>
           </thead>
           <tbody>
@@ -125,9 +140,7 @@ function Report() {
                 <tr key={p.id} className="hover:bg-gray-50">
                   <td className="py-3 px-4 border-b">{i + 1}</td>
                   <td className="py-3 px-4 border-b">{p.name}</td>
-                  <td className="py-3 px-4 border-b">{p.category}</td>
                   <td className="py-3 px-4 border-b">{p.quantity}</td>
-                  <td className="py-3 px-4 border-b">{p.price.toLocaleString()}</td>
                   <td className="py-3 px-4 border-b">
                     {(p.quantity * p.price).toLocaleString()}
                   </td>

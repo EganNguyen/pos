@@ -23,33 +23,47 @@ const fetchProductsByCategory = (category: string) => {
   });
 };
 
-// Fake API function to complete order
-// const completeOrderApi = (_cart: any[]) => {
-//   return new Promise<boolean>((resolve) => {
-//     const success = true; // Simulate always successful
-//     resolve(success);
-//   });
-// };
+// API function to complete order
 const completeOrderApi = async (cart: any[]) => {
   const url = "https://gsymrhydnwutflpnzkid.supabase.co/functions/v1/create-order";
-const params = new URLSearchParams(window.location.search);
-const table = params.get("table");
-console.log("Current URL:", window.location.href);
-console.log("Extracted table:", table);
+  const params = new URLSearchParams(window.location.search);
+  const table = params.get("table") || null;
 
-  // Build payload
-  const payload = cart.map(item => ({
-    table: table,
-    name: item.name,
-    price: Number(item.price.replace(/\D/g, "")), // Convert to numeric
-    quantity: item.quantity || 1,
-    toppings: item.toppings?.map((t: any) => ({
+  const parsePrice = (p: any) => {
+    if (typeof p === "number") return p;
+    const s = String(p ?? "");
+    const n = Number(s.replace(/\D/g, ""));
+    return Number.isFinite(n) ? n : 0;
+  };
+
+  // Build payload: price = (unitPrice + toppingsTotal) * quantity
+  const payload = cart.map((item) => {
+    const unitPrice = parsePrice(item.price);
+    const qty = item.quantity ?? 1;
+
+    const toppingsArr = (item.toppings || []).map((t: any) => ({
       name: t.name,
-      price: Number(t.price.replace(/\D/g, "")),
-      quantity: t.quantity,
-    })) || [],
-    status: "pending", // or any default status
-  }));
+      price: parsePrice(t.price),
+      quantity: t.quantity ?? 0,
+    }));
+
+    const toppingsTotal = toppingsArr.reduce(
+      (sum: number, t: any) => sum + (t.price || 0) * (t.quantity || 0),
+      0
+    );
+
+    const totalLinePrice = (unitPrice + toppingsTotal) * qty;
+
+    return {
+      table,
+      name: item.name,
+      // send numeric total for this cart line (in VND units, e.g. 75000)
+      price: totalLinePrice,
+      quantity: qty,
+      toppings: toppingsArr,
+      status: "pending",
+    };
+  });
 
   try {
     const response = await fetch(url, {
@@ -59,16 +73,19 @@ console.log("Extracted table:", table);
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      console.error("Create order failed:", response.status, await response.text());
+      return false;
     }
 
     const data = await response.json();
-    return { success: true, data };
+    console.log("Create order success:", data);
+    return true;
   } catch (error) {
     console.error("Create order API error:", error);
-    return { success: false, error };
+    return false;
   }
 };
+
 
 
 // Fake API to get toppings for a product
@@ -251,7 +268,7 @@ function App() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (activeSection === "Noodle") {
+                        if (activeSection === "Noodles") {
                           setSelectedProduct(item);
                           setIsDetailModalOpen(true);
                         } else {
@@ -300,7 +317,7 @@ function App() {
               </div>
 
               {/* === Toppings Section (only for Ramen) === */}
-              {(activeSection === "Ramen" || activeSection === "BEST SELLER") && (
+              {(activeSection === "Noodles") && (
                 <div className="mt-4">
                   <h3 className="font-semibold mb-2">Choose Toppings</h3>
                   <ul className="space-y-2">
@@ -338,20 +355,20 @@ function App() {
                   </ul>
                 </div>
               )}
-                                {/* Add to Cart button */}
-                  <div className="mt-6">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        addToCartWithToppings(selectedProduct, toppings);
-                        setIsDetailModalOpen(false);
-                      }}
-                      className="w-full bg-black text-white py-3 rounded-xl font-semibold text-lg 
+              {/* Add to Cart button */}
+              <div className="mt-6">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    addToCartWithToppings(selectedProduct, toppings);
+                    setIsDetailModalOpen(false);
+                  }}
+                  className="w-full bg-black text-white py-3 rounded-xl font-semibold text-lg 
                shadow-md hover:bg-red-700 transition"
-                    >
-                      Add to Cart 🛒
-                    </button>
-                  </div>
+                >
+                  Add to Cart 🛒
+                </button>
+              </div>
             </div>
           </div>
         )}
