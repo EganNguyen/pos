@@ -10,16 +10,81 @@ const categories = [
   "Drink",
 ];
 
+// Hardcoded products grouped by category
+const productsByCategory: Record<string, any[]> = {
+  Noodles: [
+    {
+      id: "noodles-1",
+      image: "/ramen.jpg",
+      name: "Classic Ramen",
+      price: "70,000 VND",
+    },
+    {
+      id: "noodles-2",
+      image: "/spicy-ramen.jpg",
+      name: "Spicy Ramen",
+      price: "80,000 VND",
+    },
+  ],
+  Rice: [
+    {
+      id: "rice-1",
+      image: "/fried-rice.jpg",
+      name: "Fried Rice",
+      price: "60,000 VND",
+    },
+    {
+      id: "rice-2",
+      image: "/egg-rice.png",
+      name: "Egg Rice",
+      price: "55,000 VND",
+    },
+  ],
+  "Side Dish": [
+    {
+      id: "side-1",
+      image: "/tempura.png",
+      name: "Tempura",
+      price: "20,000 VND",
+    },
+    {
+      id: "side-2",
+      image: "/tonkatsu.png",
+      name: "Tonkatsu",
+      price: "35,000 VND",
+    },
+  ],
+  Specialty: [
+    {
+      id: "Specialty-1",
+      image: "/ramen.png",
+      name: "Special Ramen",
+      price: "100,000 VND",
+    },
+  ],
+  Drink: [
+    {
+      id: "drink-1",
+      image: "/cola.png",
+      name: "Coca Cola",
+      price: "20,000 VND",
+    },
+    {
+      id: "drink-2",
+      image: "/tea.png",
+      name: "Green Tea",
+      price: "30,000 VND",
+    },
+  ],
+};
+
+
 // Fake API function
 const fetchProductsByCategory = (category: string) => {
   return new Promise((resolve) => {
-    const products = Array.from({ length: 5 }, (_, i) => ({
-      id: `${category}-${i + 1}`,
-      image: `https://thfvnext.bing.com/th/id/OSK.HERO230jngCOQY5WpVNdRufYm_8-2cB6M7gcVioSKkcWhl4?w=296&h=176&c=13&rs=2&o=6&pid=SANGAM&ucfimg=1`,
-      name: `${category} Product ${i + 1}`,
-      price: `${(70000).toLocaleString()} VND`,
-    }));
-    setTimeout(() => resolve(products), 700); // Simulate API delay
+    setTimeout(() => {
+      resolve(productsByCategory[category] || []);
+    }, 500); // optional fake delay
   });
 };
 
@@ -94,34 +159,42 @@ const fetchToppingsByProduct = (_productId: string) => {
     const toppings = [
       {
         id: "1",
-        name: "Rice",
-        price: "5,000 VND",
-        quantity: 0,
-      },
-      {
-        id: "2",
         name: "Noddles",
         price: "5,000 VND",
         quantity: 0,
       },
       {
-        id: "3",
+        id: "2",
         name: "Seaweed",
         price: "5,000 VND",
         quantity: 0,
       },
       {
-        id: "4",
+        id: "3",
         name: "Pork",
         price: "15,000 VND",
         quantity: 0,
       },
       {
-        id: "5",
+        id: "4",
         name: "Egg",
         price: "5,000 VND",
         quantity: 0,
       },
+    ];
+    resolve(toppings);
+  });
+};
+
+const fetchToppingsForRice = (_productId: string) => {
+  return new Promise((resolve) => {
+    const toppings = [
+      {
+        id: "1",
+        name: "Rice",
+        price: "5,000 VND",
+        quantity: 0,
+      }
     ];
     resolve(toppings);
   });
@@ -179,13 +252,23 @@ function App() {
     });
   }, [activeSection]);
 
+  // Load toppings dynamically depending on category
   useEffect(() => {
     if (isDetailModalOpen && selectedProduct) {
-      fetchToppingsByProduct(selectedProduct.id).then((items: any) => {
-        setToppings(items);
-      });
+      if (activeSection === "Noodles") {
+        fetchToppingsByProduct(selectedProduct.id).then((items: any) => {
+          setToppings(items);
+        });
+      } else if (activeSection === "Rice") {
+        fetchToppingsForRice(selectedProduct.id).then((items: any) => {
+          setToppings(items);
+        });
+      } else {
+        setToppings([]); // no toppings for other categories
+      }
     }
-  }, [isDetailModalOpen, selectedProduct]);
+  }, [isDetailModalOpen, selectedProduct, activeSection]);
+
 
 
   return (
@@ -268,7 +351,7 @@ function App() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (activeSection === "Noodles") {
+                        if (activeSection === "Noodles" || activeSection === "Rice") {
                           setSelectedProduct(item);
                           setIsDetailModalOpen(true);
                         } else {
@@ -279,6 +362,7 @@ function App() {
                     >
                       +
                     </button>
+
 
                   </div>
 
@@ -316,8 +400,8 @@ function App() {
                 <span className="text-xl font-bold">{selectedProduct.price}</span>
               </div>
 
-              {/* === Toppings Section (only for Ramen) === */}
-              {(activeSection === "Noodles") && (
+              {/* === Toppings Section  */}
+              {(activeSection === "Noodles" || activeSection === "Rice") && (
                 <div className="mt-4">
                   <h3 className="font-semibold mb-2">Choose Toppings</h3>
                   <ul className="space-y-2">
@@ -355,6 +439,9 @@ function App() {
                   </ul>
                 </div>
               )}
+
+
+
               {/* Add to Cart button */}
               <div className="mt-6">
                 <button
@@ -462,7 +549,7 @@ function App() {
 
       {/* ===== Complete Modal ===== */}
       {isCompleteModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-white bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-80 max-w-sm shadow-lg text-center">
             <h2 className="text-3xl font-bold text-green-600 mb-4">Complete!</h2>
             <p className="text-gray-700 mb-6">Your order has been successfully placed.</p>
