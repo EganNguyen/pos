@@ -24,12 +24,52 @@ const fetchProductsByCategory = (category: string) => {
 };
 
 // Fake API function to complete order
-const completeOrderApi = (_cart: any[]) => {
-  return new Promise<boolean>((resolve) => {
-    const success = true; // Simulate always successful
-    resolve(success);
-  });
+// const completeOrderApi = (_cart: any[]) => {
+//   return new Promise<boolean>((resolve) => {
+//     const success = true; // Simulate always successful
+//     resolve(success);
+//   });
+// };
+const completeOrderApi = async (cart: any[]) => {
+  const url = "https://gsymrhydnwutflpnzkid.supabase.co/functions/v1/create-order";
+const params = new URLSearchParams(window.location.search);
+const table = params.get("table");
+console.log("Current URL:", window.location.href);
+console.log("Extracted table:", table);
+
+  // Build payload
+  const payload = cart.map(item => ({
+    table: table,
+    name: item.name,
+    price: Number(item.price.replace(/\D/g, "")), // Convert to numeric
+    quantity: item.quantity || 1,
+    toppings: item.toppings?.map((t: any) => ({
+      name: t.name,
+      price: Number(t.price.replace(/\D/g, "")),
+      quantity: t.quantity,
+    })) || [],
+    status: "pending", // or any default status
+  }));
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ orders: payload }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return { success: true, data };
+  } catch (error) {
+    console.error("Create order API error:", error);
+    return { success: false, error };
+  }
 };
+
 
 // Fake API to get toppings for a product
 const fetchToppingsByProduct = (_productId: string) => {
