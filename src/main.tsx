@@ -2,8 +2,10 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import App from "./App";
-import Report from "./Report"; // <-- new page
+import Report from "./Report";
+
 import "./index.css";
+import Kitchen from "./Kitchen";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -11,6 +13,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/report" element={<Report />} />
+        <Route path="/kitchen" element={<Kitchen />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

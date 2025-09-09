@@ -3,8 +3,7 @@ import "./App.css";
 
 // Categories
 const categories = [
-  "BEST SELLER",
-  "Ramen",
+  "Noodles",
   "Rice",
   "Side Dish",
   "Specialty",
@@ -38,32 +37,32 @@ const fetchToppingsByProduct = (_productId: string) => {
     const toppings = [
       {
         id: "1",
-        name: "Mini salad",
-        price: "30,000 VND",
+        name: "Rice",
+        price: "5,000 VND",
         quantity: 0,
       },
       {
         id: "2",
-        name: "Natto (Fermented Bean)",
-        price: "35,000 VND",
+        name: "Noddles",
+        price: "5,000 VND",
         quantity: 0,
       },
       {
         id: "3",
-        name: "Deep Fried Tenderloin Pork 1pcs",
-        price: "40,000 VND",
+        name: "Seaweed",
+        price: "5,000 VND",
         quantity: 0,
       },
       {
         id: "4",
-        name: "Deep Fried Chicken With Japanese Tartar Sauce 2piece",
-        price: "50,000 VND",
+        name: "Pork",
+        price: "15,000 VND",
         quantity: 0,
       },
       {
         id: "5",
-        name: "Deep Fried Japanese Oyster 1piece",
-        price: "75,000 VND",
+        name: "Egg",
+        price: "5,000 VND",
         quantity: 0,
       },
     ];
@@ -212,7 +211,7 @@ function App() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (activeSection === "Ramen" || activeSection === "BEST SELLER") {
+                        if (activeSection === "Noodle") {
                           setSelectedProduct(item);
                           setIsDetailModalOpen(true);
                         } else {
