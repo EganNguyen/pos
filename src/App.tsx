@@ -471,23 +471,51 @@ function App() {
             {cart.length === 0 ? (
               <p className="text-gray-500">No products in the cart.</p>
             ) : (
-              <ul className="space-y-4">
-                {cart.map((item, index) => (
-                  <li key={index} className="flex gap-4 items-center border-b pb-3">
-                    {/* Optional: image placeholder */}
-                    <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center text-gray-400">
-                      Img
-                    </div>
+<ul className="space-y-4">
+  {cart.map((item, index) => (
+    <li key={index} className="flex flex-col gap-2 border-b pb-3">
+      <div className="flex gap-4 items-center">
+        {/* Product Image */}
+        <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+          <img
+            src={item.image}
+            alt={item.name}
+            className="w-full h-full object-cover"
+          />
+        </div>
 
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-gray-800">{item.name}</h3>
-                      <p className="text-gray-500">x {item.quantity || 1}</p>
-                    </div>
+        <div className="flex-1">
+          <h3 className="font-semibold text-gray-800">{item.name}</h3>
+          <p className="text-gray-500">x {item.quantity || 1}</p>
 
-                    <div className="text-black font-bold">{item.price}</div>
-                  </li>
-                ))}
-              </ul>
+          {/* Toppings */}
+          {item.toppings && item.toppings.length > 0 && (
+            <ul className="mt-1 ml-2 text-gray-600 text-sm">
+              {item.toppings.map((t: any) => (
+                <li key={t.id}>
+                  {t.name} x {t.quantity}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <div className="text-black font-bold">
+          {(Number(item.price.replace(/\D/g, "")) * (item.quantity || 1) +
+            (item.toppings
+              ? item.toppings.reduce(
+                  (sum: number, t: any) =>
+                    sum + Number(t.price.replace(/\D/g, "")) * (t.quantity || 0),
+                  0
+                )
+              : 0)
+          ).toLocaleString()} VND
+        </div>
+      </div>
+    </li>
+  ))}
+</ul>
+
             )}
 
             {/* Summary */}
