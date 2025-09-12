@@ -276,14 +276,7 @@ function App() {
       {/* Header */}
       <header className="bg-white shadow-lg px-6 py-4 flex justify-between items-center sticky top-0 z-50">
         {/* Logo */}
-        <div className="flex items-center space-x-3">
-          <img
-            src="/logo.png"
-            alt="Mama Ramen Logo"
-            className="w-14 h-14 object-contain"
-          />
-          <h1 className="text-xl font-bold text-gray-900">Mama ramen</h1>
-        </div>
+        {/* Logo */} <div className="flex items-center space-x-3"> <img src="/logo.png" alt="Mama Ramen Logo" className="w-14 h-14 object-contain" /> <h1 className="text-xl font-bold text-gray-900">Mama ramen</h1> </div>
         <div className="flex gap-3 items-center">
           <div className="flex gap-3 items-center">
             <button
@@ -379,37 +372,31 @@ function App() {
 
         {/* === Product Detail Modal === */}
         {isDetailModalOpen && selectedProduct && (
-          <div className="fixed inset-0 bg-white backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-xl p-6 w-96 max-w-md shadow-lg relative">
-              <button
-                className="absolute top-2 right-2 text-gray-500 hover:text-black"
-                onClick={() => setIsDetailModalOpen(false)}
-              >
-                ✖
-              </button>
+          <div className="fixed inset-0 bg-white bg-opacity-80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl p-4 md:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-lg relative">
               <img
                 src={selectedProduct.image}
                 alt={selectedProduct.name}
                 className="w-full h-56 object-cover rounded-lg mb-4"
               />
-              <h2 className="text-2xl font-bold mb-2">{selectedProduct.name}</h2>
-              <p className="text-gray-600 mb-4">
+
+              <h2 className="text-xl md:text-2xl font-bold mb-2">{selectedProduct.name}</h2>
+              <p className="text-gray-600 mb-4 text-sm sm:text-base">
                 This is a delicious {selectedProduct.name}. Perfect for your meal!
               </p>
-              <div className="flex justify-between items-center mb-4">
-                <span className="text-xl font-bold">{selectedProduct.price}</span>
+              <div className="flex justify-between items-center mb-4 text-sm sm:text-base">
+                <span className="font-semibold">{selectedProduct.price}</span>
               </div>
 
-              {/* === Toppings Section  */}
               {(activeSection === "Noodles" || activeSection === "Rice") && (
                 <div className="mt-4">
-                  <h3 className="font-semibold mb-2">Choose Toppings</h3>
-                  <ul className="space-y-2">
+                  <h3 className="font-semibold mb-2 text-sm sm:text-base">Choose Toppings</h3>
+                  <ul className="space-y-2 max-h-64 overflow-y-auto">
                     {toppings.map((topping, index) => (
-                      <li key={topping.id} className="flex justify-between items-center">
+                      <li key={topping.id} className="flex justify-between items-center text-sm sm:text-base">
                         <div>
                           <p className="text-gray-800">{topping.name}</p>
-                          <p className="text-gray-500 text-sm">{topping.price}</p>
+                          <p className="text-gray-500">{topping.price}</p>
                         </div>
                         <div className="flex items-center gap-2">
                           <button
@@ -440,25 +427,44 @@ function App() {
                 </div>
               )}
 
+              <div className="mt-4">
+                {/* Add to Cart + Close button section */}
+                <div className="mt-6 flex items-center gap-4">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      addToCartWithToppings(selectedProduct, toppings);
+                      setIsDetailModalOpen(false);
+                    }}
+                    className="flex-[2] bg-black text-white py-3 rounded-xl font-semibold text-lg shadow-md hover:bg-red-700 transition flex items-center justify-center gap-2"
+                  >
+                    {/* Inline SVG icon */}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                      className="w-6 h-6"
+                    >
+                      <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 3c0 .55.45 1 1 1h1l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h11c.55 0 1-.45 1-1s-.45-1-1-1H7l1.1-2h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.37-.66-.11-1.48-.87-1.48H5.21l-.67-1.43c-.16-.35-.52-.57-.9-.57H2c-.55 0-1 .45-1 1zm16 15c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"></path>
+                    </svg>
+                    Add to Cart
+                  </button>
 
 
-              {/* Add to Cart button */}
-              <div className="mt-6">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    addToCartWithToppings(selectedProduct, toppings);
-                    setIsDetailModalOpen(false);
-                  }}
-                  className="w-full bg-black text-white py-3 rounded-xl font-semibold text-lg 
-               shadow-md hover:bg-red-700 transition"
-                >
-                  Add to Cart 🛒
-                </button>
+                  <button
+                    onClick={() => setIsDetailModalOpen(false)}
+                    className="flex-[1] bg-white text-black py-3 rounded-xl font-semibold text-lg shadow-md hover:bg-gray-200 transition border border-black"
+                  >
+                    X Close
+                  </button>
+                </div>
+
+
               </div>
             </div>
           </div>
         )}
+
 
       </div>
       {/* Cart Modal */}
