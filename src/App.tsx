@@ -209,6 +209,7 @@ function App() {
   const [cart, setCart] = useState<any[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
+  const [isFloatingCartVisible, setIsFloatingCartVisible] = useState(true);
   const addToCartWithToppings = (product: any, toppings: any[]) => {
     const selectedToppings = toppings.filter(t => t.quantity > 0);
 
@@ -471,50 +472,50 @@ function App() {
             {cart.length === 0 ? (
               <p className="text-gray-500">No products in the cart.</p>
             ) : (
-<ul className="space-y-4">
-  {cart.map((item, index) => (
-    <li key={index} className="flex flex-col gap-2 border-b pb-3">
-      <div className="flex gap-4 items-center">
-        {/* Product Image */}
-        <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
-          <img
-            src={item.image}
-            alt={item.name}
-            className="w-full h-full object-cover"
-          />
-        </div>
+              <ul className="space-y-4">
+                {cart.map((item, index) => (
+                  <li key={index} className="flex flex-col gap-2 border-b pb-3">
+                    <div className="flex gap-4 items-center">
+                      {/* Product Image */}
+                      <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
 
-        <div className="flex-1">
-          <h3 className="font-semibold text-gray-800">{item.name}</h3>
-          <p className="text-gray-500">x {item.quantity || 1}</p>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-gray-800">{item.name}</h3>
+                        <p className="text-gray-500">x {item.quantity || 1}</p>
 
-          {/* Toppings */}
-          {item.toppings && item.toppings.length > 0 && (
-            <ul className="mt-1 ml-2 text-gray-600 text-sm">
-              {item.toppings.map((t: any) => (
-                <li key={t.id}>
-                  {t.name} x {t.quantity}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+                        {/* Toppings */}
+                        {item.toppings && item.toppings.length > 0 && (
+                          <ul className="mt-1 ml-2 text-gray-600 text-sm">
+                            {item.toppings.map((t: any) => (
+                              <li key={t.id}>
+                                {t.name} x {t.quantity}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
 
-        <div className="text-black font-bold">
-          {(Number(item.price.replace(/\D/g, "")) * (item.quantity || 1) +
-            (item.toppings
-              ? item.toppings.reduce(
-                  (sum: number, t: any) =>
-                    sum + Number(t.price.replace(/\D/g, "")) * (t.quantity || 0),
-                  0
-                )
-              : 0)
-          ).toLocaleString()} VND
-        </div>
-      </div>
-    </li>
-  ))}
-</ul>
+                      <div className="text-black font-bold">
+                        {(Number(item.price.replace(/\D/g, "")) * (item.quantity || 1) +
+                          (item.toppings
+                            ? item.toppings.reduce(
+                              (sum: number, t: any) =>
+                                sum + Number(t.price.replace(/\D/g, "")) * (t.quantity || 0),
+                              0
+                            )
+                            : 0)
+                        ).toLocaleString()} VND
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
 
             )}
 
@@ -544,7 +545,10 @@ function App() {
                 <div className="flex justify-end gap-3">
                   <button
                     className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-                    onClick={() => setIsCartOpen(false)}
+                    onClick={() => {
+                      setIsCartOpen(false);
+                      setIsFloatingCartVisible(true);
+                    }}
                   >
                     Cancel
                   </button>
@@ -581,6 +585,7 @@ function App() {
             <button
               className="px-6 py-2 bg-black text-white rounded hover:bg-red-700"
               onClick={() => setIsCompleteModalOpen(false)}
+
             >
               Close
             </button>
@@ -590,27 +595,30 @@ function App() {
       )}
 
       {/* Floating Cart Button (bottom, wide with cart + total) */}
-      <div
-        className="fixed bottom-6 right-6 left-6 flex justify-between items-center bg-black text-white rounded-xl shadow-lg px-6 py-4 hover:bg-black transition cursor-pointer"
-        onClick={() => setIsCartOpen(true)}
-      >
-        <h1 className="text-xl font-bold">Cart ({cart.length})</h1>
-        <h1 className="text-xl font-bold">
-          {cart.reduce((acc, item) => {
-            const numericPrice = Number(item.price.replace(/\D/g, ""));
-
-            // Add topping prices too
-            const toppingTotal = item.toppings
-              ? item.toppings.reduce((sum: number, t: any) => {
-                const toppingPrice = Number(t.price.replace(/\D/g, ""));
-                return sum + toppingPrice * (t.quantity || 0);
-              }, 0)
-              : 0;
-
-            return acc + (numericPrice * (item.quantity || 1)) + toppingTotal;
-          }, 0).toLocaleString()} VND
-        </h1>
-      </div>
+      {/* Floating Cart Button */}
+      {isFloatingCartVisible && !isCartOpen && (
+        <div
+          className="fixed bottom-6 right-6 left-6 flex justify-between items-center bg-black text-white rounded-xl shadow-lg px-6 py-4 hover:bg-black transition cursor-pointer z-40"
+          onClick={() => {
+            setIsCartOpen(true);
+            setIsFloatingCartVisible(false);
+          }}
+        >
+          <h1 className="text-xl font-bold">Cart ({cart.length})</h1>
+          <h1 className="text-xl font-bold">
+            {cart.reduce((acc, item) => {
+              const numericPrice = Number(item.price.replace(/\D/g, ""));
+              const toppingTotal = item.toppings
+                ? item.toppings.reduce((sum: number, t: any) => {
+                  const toppingPrice = Number(t.price.replace(/\D/g, ""));
+                  return sum + toppingPrice * (t.quantity || 0);
+                }, 0)
+                : 0;
+              return acc + numericPrice * (item.quantity || 1) + toppingTotal;
+            }, 0).toLocaleString()} VND
+          </h1>
+        </div>
+      )}
 
     </div>
   );
