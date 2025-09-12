@@ -210,30 +210,36 @@ function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
   const [isFloatingCartVisible, setIsFloatingCartVisible] = useState(true);
-  const addToCartWithToppings = (product: any, toppings: any[]) => {
-    const selectedToppings = toppings.filter(t => t.quantity > 0);
+  const addToCartWithToppings = (product: any, toppings: any[] = []) => {
+    const selectedToppings = toppings
+      .filter(t => t.quantity > 0)
+      .map(t => ({ ...t }));
 
-    setCart((prev) => {
-      // Check if same product + same toppings already exist
+    setCart(prev => {
+      const normalize = (toppings: any[]) =>
+        (toppings || [])
+          .map(t => ({ id: t.id, quantity: t.quantity || 0 }))
+          .sort((a, b) => a.id.localeCompare(b.id));
+
       const existingIndex = prev.findIndex(
-        (item) =>
+        item =>
           item.id === product.id &&
-          JSON.stringify(item.toppings) === JSON.stringify(selectedToppings)
+          JSON.stringify(normalize(item.toppings)) ===
+          JSON.stringify(normalize(selectedToppings))
       );
 
       if (existingIndex !== -1) {
-        // Merge by increasing quantity
-        const updatedCart = [...prev];
-        updatedCart[existingIndex].quantity =
-          (updatedCart[existingIndex].quantity || 1) + 1;
-        return updatedCart;
+        const updated = [...prev];
+        updated[existingIndex] = {
+          ...updated[existingIndex],
+          quantity: (updated[existingIndex].quantity || 1) + 1
+        };
+        return updated;
       }
 
-      // Otherwise add as a new cart entry
       return [...prev, { ...product, quantity: 1, toppings: selectedToppings }];
     });
   };
-
 
 
   // states for detail modal
@@ -241,9 +247,21 @@ function App() {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [toppings, setToppings] = useState<any[]>([]);
 
-  const addToCart = (product: any) => {
-    setCart((prev) => [...prev, product]);
-  };
+const addToCart = (product: any) => {
+  setCart((prev) => {
+    const existingIndex = prev.findIndex(item => item.id === product.id && (!item.toppings || item.toppings.length === 0));
+    if (existingIndex !== -1) {
+      const updated = [...prev];
+      updated[existingIndex] = {
+        ...updated[existingIndex],
+        quantity: (updated[existingIndex].quantity || 1) + 1
+      };
+      return updated;
+    }
+    return [...prev, { ...product, quantity: 1 }];
+  });
+};
+
 
   useEffect(() => {
     setLoading(true);
@@ -286,8 +304,9 @@ function App() {
             >
               🛒
               <span className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full text-xs px-1">
-                {cart.length}
+                {cart.reduce((acc, item) => acc + (item.quantity || 1), 0)}
               </span>
+
             </button>
           </div>
 
@@ -425,7 +444,9 @@ function App() {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      addToCartWithToppings(selectedProduct, toppings);
+                      if (selectedProduct) {
+                        addToCartWithToppings(selectedProduct, toppings);
+                      }
                       setIsDetailModalOpen(false);
                     }}
                     className="flex-[2] bg-black text-white py-3 rounded-xl font-semibold text-lg shadow-md hover:bg-red-700 transition flex items-center justify-center gap-2"
@@ -604,7 +625,10 @@ function App() {
             setIsFloatingCartVisible(false);
           }}
         >
-          <h1 className="text-xl font-bold">Cart ({cart.length})</h1>
+          <h1 className="text-xl font-bold">
+            Cart ({cart.reduce((acc, item) => acc + (item.quantity || 1), 0)})
+          </h1>
+
           <h1 className="text-xl font-bold">
             {cart.reduce((acc, item) => {
               const numericPrice = Number(item.price.replace(/\D/g, ""));
