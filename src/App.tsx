@@ -126,7 +126,7 @@ const completeOrderApi = async (cart: any[]) => {
       price: totalLinePrice,
       quantity: qty,
       toppings: toppingsArr,
-      status: "pending",
+      status: "Pending",
     };
   });
 
