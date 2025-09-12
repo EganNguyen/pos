@@ -313,16 +313,7 @@ function App() {
 
         {/* Main Content */}
         <main className="w-3/4 flex-1 p-6 overflow-y-auto">
-          {loading ? (
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="bg-white rounded-2xl shadow-lg animate-pulse h-64"
-                ></div>
-              ))}
-            </div>
-          ) : (
+          {loading ? null : (
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {menuItems.map((item) => (
                 <div
