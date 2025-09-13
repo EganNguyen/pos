@@ -61,7 +61,6 @@ function Kitchen() {
   const [tables, setTables] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedTable, setSelectedTable] = useState("");
   const [selectedTables, setSelectedTables] = useState<Record<string, string>>({});
 
 
@@ -282,7 +281,6 @@ if (payload.eventType === "UPDATE") {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {tables.map((table) => {
           // Determine if table is a takeaway table
-          const isTakeaway = table.id.includes("MANG VỀ");
           return (
 <div
   key={table.id}
