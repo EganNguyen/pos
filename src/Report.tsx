@@ -220,7 +220,7 @@ const fetchProducts = async () => {
                   <td className="py-3 px-4 border-b">{p.id}</td>
                   <td className="py-3 px-4 border-b">{p.name}</td>
                   <td className="py-3 px-4 border-b">{p.quantity}</td>
-                  <td className="py-3 px-4 border-b">{(p.quantity * p.price).toLocaleString()}</td>
+                  <td className="py-3 px-4 border-b">{(p.price).toLocaleString()}</td>
                 </tr>
               ))
             )}

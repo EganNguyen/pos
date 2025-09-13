@@ -177,10 +177,9 @@ const completeOrderApi = async (cart: any[]) => {
   const params = new URLSearchParams(window.location.search);
   const table = params.get("table");
 
-   if (!table) {
-      // Redirect to error page if table param is missing
-      window.location.href = "/error"; // replace with your error page URL
-    }
+  if (!table) {
+    window.location.href = "/error";
+  }
 
   const parsePrice = (p: any) => {
     if (typeof p === "number") return p;
@@ -189,36 +188,34 @@ const completeOrderApi = async (cart: any[]) => {
     return Number.isFinite(n) ? n : 0;
   };
 
-  // Build payload: price = (unitPrice + toppingsTotal) * quantity
-  const payload = cart.map((item) => {
-    const unitPrice = parsePrice(item.price);
-    const qty = item.quantity ?? 1;
+  // Build payload: send unit price and quantity, not total price
+const payload = cart.map((item) => {
+  const unitPrice = parsePrice(item.price);
+  const qty = item.quantity ?? 1;
 
-    const toppingsArr = (item.toppings || []).map((t: any) => ({
-      name: t.name,
-      price: parsePrice(t.price),
-      quantity: t.quantity ?? 0,
-    }));
+  const toppingsArr = (item.toppings || []).map((t: any) => ({
+    name: t.name,
+    price: parsePrice(t.price), // unit price of topping
+    quantity: t.quantity ?? 0,  // quantity of topping
+  }));
 
-    const toppingsTotal = toppingsArr.reduce(
-      (sum: number, t: any) => sum + (t.price || 0) * (t.quantity || 0),
-      0
-    );
-
-    const totalLinePrice = (unitPrice + toppingsTotal) * qty;
+  // Total topping price per unit
+const toppingsTotal = toppingsArr.reduce((sum: number, t: { price: number; quantity: number }) => {
+  return sum + t.price * (t.quantity ?? 1);
+}, 0);
 
 
 
-    return {
-      table,
-      name: item.name,
-      // send numeric total for this cart line (in đ units, e.g. 75000)
-      price: totalLinePrice,
-      quantity: qty,
-      toppings: toppingsArr,
-      status: "Pending",
-    };
-  });
+  return {
+    table,
+    name: item.name,
+    price: unitPrice + toppingsTotal, 
+    quantity: qty,
+    toppings: toppingsArr,
+    status: "Pending",
+  };
+});
+
 
   try {
     const response = await fetch(url, {
@@ -240,6 +237,7 @@ const completeOrderApi = async (cart: any[]) => {
     return false;
   }
 };
+
 
 
 
@@ -335,6 +333,40 @@ const [productQuantity, setProductQuantity] = useState(1);
     : 0;
   return (basePrice + toppingsTotal) * (item.quantity || 1);
 };
+
+// Inside your App component
+const totalItemsInCart = cart.reduce((acc, item) => acc + (item.quantity || 1), 0);
+
+
+const parsePrice = (price: string | number | undefined): number => {
+  if (!price) return 0;
+  if (typeof price === "number") return price;
+  // Remove anything that’s not a digit or dot
+  const numeric = price.replace(/[^\d.]/g, "");
+  return Number(numeric) || 0;
+};
+
+type Topping = { price?: string | number; quantity?: number };
+type CartItem = { price?: string | number; quantity?: number; toppings?: Topping[] };
+
+const getItemLineTotal = (item: CartItem): number => {
+  if (!item) return 0;
+  const unitPrice = parsePrice(item.price);
+
+  const toppingsTotal = (item.toppings || []).reduce((sum, t) => {
+    const toppingPrice = parsePrice(t.price);
+    const toppingQty = Number(t.quantity) || 1;
+    return sum + toppingPrice * toppingQty;
+  }, 0);
+
+  return (unitPrice + toppingsTotal);
+};
+
+
+
+
+
+
 
 
 
@@ -468,57 +500,62 @@ useEffect(() => {
           ))}
         </aside>
 
-        {/* Main Content */}
-        <main className="w-3/4 flex-1 p-6 overflow-y-auto">
-          {loading ? null : (
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {menuItems.map((item) => (
-                <div
-                  key={item.id}
-                  onClick={() => {
+{/* Main Content */}
+<main className="w-3/4 flex-1 p-6 overflow-y-auto">
+  {loading ? null : (
+    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      {menuItems.map((item) => {
+        // Compute total quantity in cart for this item
+        const itemQuantity = cart
+          .filter(ci => ci.id === item.id)
+          .reduce((sum, ci) => sum + (ci.quantity || 1), 0);
+
+        return (
+          <div
+            key={item.id}
+            onClick={() => {
+              setSelectedProduct(item);
+              setIsDetailModalOpen(true);
+            }}
+            className="bg-white rounded-2xl shadow-lg overflow-hidden transform hover:scale-105 transition duration-300 relative cursor-pointer"
+          >
+            {/* Image wrapper */}
+            <div className="relative">
+              <img
+                src={item.image}
+                alt={item.name}
+                className="w-full h-48 object-cover"
+              />
+
+              {/* Add to Cart button (stops click bubbling) */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (activeSection === "Noodles" || activeSection === "Rice") {
                     setSelectedProduct(item);
                     setIsDetailModalOpen(true);
-                  }}
-                  className="bg-white rounded-2xl shadow-lg overflow-hidden transform hover:scale-105 transition duration-300 relative cursor-pointer"
-                >
-                  {/* Image wrapper */}
-                  <div className="relative">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-48 object-cover"
-                    />
-                    {/* Add to Cart button (stops click bubbling) */}
-<button
-  onClick={(e) => {
-    e.stopPropagation();
-    if (activeSection === "Noodles" || activeSection === "Rice") {
-      setSelectedProduct(item);
-      setIsDetailModalOpen(true);
-    } else {
-      addToCart(item);
-    }
-  }}
-  className="absolute bottom-2 right-2 bg-black text-white w-10 h-10 flex items-center justify-center rounded-full hover:bg-red-700 transition border-white border-4"
->
-  {/* Show quantity if in cart, else "+" */}
-  {cart.find(ci => ci.id === item.id && (!ci.toppings || ci.toppings.length === 0))?.quantity || "+"}
-</button>
-
-
-
-                  </div>
-
-                  {/* Info */}
-                  <div className="p-5">
-                    <h3 className="font-semibold text-gray-800">{item.name}</h3>
-                    <div className="text-black font-bold">{item.price}</div>
-                  </div>
-                </div>
-              ))}
+                  } else {
+                    addToCart(item);
+                  }
+                }}
+                className="absolute bottom-2 right-2 bg-black text-white w-10 h-10 flex items-center justify-center rounded-full hover:bg-red-700 transition border-white border-4"
+              >
+                {itemQuantity > 0 ? itemQuantity : "+"}
+              </button>
             </div>
-          )}
-        </main>
+
+            {/* Info */}
+            <div className="p-5">
+              <h3 className="font-semibold text-gray-800">{item.name}</h3>
+              <div className="text-black font-bold">{item.price} đ</div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  )}
+</main>
+
 
         {/* === Product Detail Modal === */}
         {isDetailModalOpen && selectedProduct && (
@@ -682,7 +719,7 @@ useEffect(() => {
                       </div>
 
 <div className="text-black font-bold">
-  {getLineTotal(item)} đ
+  {getItemLineTotal(item)?.toLocaleString() ?? "0"} đ
 </div>
 
                     </div>
@@ -778,7 +815,7 @@ useEffect(() => {
           }}
         >
           <h1 className="text-xl font-bold">
-            Cart ({cart.reduce((acc, item) => acc + (item.quantity || 1), 0)})
+            Cart ({totalItemsInCart})
           </h1>
 
           <h1 className="text-xl font-bold">
