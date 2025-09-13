@@ -1,79 +1,148 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 
-// Categories
+// Categories with display name + key for productsByCategory
 const categories = [
-  "Noodles",
-  "Rice",
-  "Side Dish",
-  "Specialty",
-  "Drink",
+  { key: "Noodles", label: "Mì Ramen/Udon" },
+  { key: "Rice", label: "Cơm" },
+  { key: "Specialty", label: "Món Đặc Biệt" },
+  { key: "Side Dish", label: "Món ăn kèm" },
+  { key: "Drink", label: "Nước uống" },
 ];
+
 
 // Hardcoded products grouped by category
 const productsByCategory: Record<string, any[]> = {
-  Noodles: [
+   Noodles: [
     {
       id: "noodles-1",
-      image: "/ramen.jpg",
-      name: "Classic Ramen",
-      price: "70,000 VND",
+      image: "/tonkotsu-ramen.jpg",
+      name: "Mì Nước Truyền Thống Tonkotsu Ramen",
+      price: "60,000 ₫",
     },
     {
       id: "noodles-2",
       image: "/spicy-ramen.jpg",
-      name: "Spicy Ramen",
-      price: "80,000 VND",
+      name: "Mì cay phomai Spicy Tonkotsu ramen",
+      price: "70,000 ₫",
     },
+    {
+      id: "noodles-3",
+      image: "/udon.jpg",
+      name: "Mì udon ( Tempura Niku Udon )",
+      price: "70,000 ₫",
+    },
+    {
+      id: "noodles-4",
+      image: "/teriyaki-ramen.jpg",
+      name: "Mì Trộn Teriyaki ramen",
+      price: "60,000 ₫",
+    },
+    {
+      id: "noodles-5",
+      image: "/miso-cheese-ramen.jpg",
+      name: "Miso Cheese Ramen",
+      price: "70,000 ₫",
+    },
+    {
+      id: "noodles-6",
+      image: "/miso.jpg",
+      name: "Miso Tantanmen",
+      price: "55,000 ₫",
+    }
   ],
   Rice: [
     {
       id: "rice-1",
-      image: "/fried-rice.jpg",
-      name: "Fried Rice",
-      price: "60,000 VND",
+      image: "/gyudon.jpg",
+      name: "Gyudon ( Cơm bò )",
+      description: "Cơm bò Mỹ trứng lòng đào với sốt dashi đậm đà sánh quyện /n Beef rice bowl with half boiled egg, onion and special dashi sauce.",
+      price: "70,000 đ",
     },
     {
       id: "rice-2",
-      image: "/egg-rice.jpg",
+      image: "/omurice.jpg",
       name: "Egg Rice",
-      price: "55,000 VND",
+      description: "Cơm chiên thịt heo bọc trứng kèm phomai lát và sốt bò hầm rau củ đặc biệt /n Omelette fried rice with beef demi glaze sauce and slided cheese",
+      price: "70,000 đ",
+    },
+      {
+      id: "rice-3",
+      image: "/katsudon.jpg",
+      name: "Cơm heo ( Katsudon )",
+      price: "70,000 ₫",
+    },
+  ],
+    Specialty: [
+    {
+      id: "Specialty-1",
+      image: "/TSUKEMEN.jpg",
+      name: "MÌ CHẤM SÚP TÔM TSUKEMEN",
+      price: "100,000 đ",
     },
   ],
   "Side Dish": [
     {
       id: "side-1",
-      image: "/tempura.jpg",
-      name: "Tempura",
-      price: "20,000 VND",
+      image: "/toriten.jpg",
+      name: "Toriten ( Tempura gà )",
+      price: "30,000 ₫",
     },
     {
       id: "side-2",
       image: "/tonkatsu.jpg",
-      name: "Tonkatsu",
-      price: "35,000 VND",
+      name: "Cốt lết heo ( Tonkatsu )",
+      price: "40,000 ₫",
     },
-  ],
-  Specialty: [
     {
-      id: "Specialty-1",
-      image: "/ramen.jpg",
-      name: "Special Ramen",
-      price: "100,000 VND",
+      id: "side-3",
+      image: "/miso-soup.jpg",
+      name: "Miso soup",
+      price: "15,000 ₫",
     },
   ],
   Drink: [
     {
       id: "drink-1",
-      image: "/coca.jpg",
-      name: "Coca Cola",
-      price: "20,000 VND",
+      image: "/soda-ginger.jpg",
+      name: "Soda Chanh Gừng",
+      price: "25,000 ₫",
     },
     {
       id: "drink-2",
-      image: "/matcha.jpg",
-      name: "Green Tea",
-      price: "30,000 VND",
+      image: "/rice-milk.jpg",
+      name: "Sữa gạo rang",
+      price: "25,000 ₫",
+    },
+    {
+      id: "drink-3",
+      image: "/jasmine-milk-tea.jpg",
+      name: "Trà sữa lài ủ lạnh",
+      price: "25,000 ₫",
+    },
+    {
+      id: "drink-4",
+      image: "/water.jpg",
+      name: "Nước suối",
+      price: "10,000 ₫",
+    },
+    {
+      id: "drink-5",
+      image: "/matcha-latte.jpg",
+      name: "Matcha Latte",
+      price: "35,000 ₫",
+    },
+    {
+      id: "drink-6",
+      image: "/coca.jpg",
+      name: "Coca",
+      price: "20,000 ₫",
+    },
+    {
+      id: "drink-7",
+      image: "/soda-quyt.jpg",
+      name: "Soda quýt nhài",
+      price: "25,000 ₫",
     },
   ],
 };
@@ -122,7 +191,7 @@ const completeOrderApi = async (cart: any[]) => {
     return {
       table,
       name: item.name,
-      // send numeric total for this cart line (in VND units, e.g. 75000)
+      // send numeric total for this cart line (in đ units, e.g. 75000)
       price: totalLinePrice,
       quantity: qty,
       toppings: toppingsArr,
@@ -158,29 +227,45 @@ const fetchToppingsByProduct = (_productId: string) => {
   return new Promise((resolve) => {
     const toppings = [
       {
-        id: "1",
-        name: "Noddles",
-        price: "5,000 VND",
-        quantity: 0,
-      },
-      {
-        id: "2",
-        name: "Seaweed",
-        price: "5,000 VND",
-        quantity: 0,
-      },
-      {
-        id: "3",
-        name: "Pork",
-        price: "15,000 VND",
-        quantity: 0,
-      },
-      {
-        id: "4",
-        name: "Egg",
-        price: "5,000 VND",
-        quantity: 0,
-      },
+      id: "topping-1",
+      name: "Thêm rong biển lá",
+      price: "5,000 ₫",
+    },
+    {
+      id: "topping-2",
+      name: "Thêm thịt xá xíu",
+      price: "15,000 ₫",
+    },
+    {
+      id: "topping-3",
+      name: "Thêm rau",
+      price: "5,000 ₫",
+    },
+    {
+      id: "topping-4",
+      name: "Thêm 1/2 trứng",
+      price: "5,000 ₫",
+    },
+    {
+      id: "topping-5",
+      name: "Thêm mì",
+      price: "5,000 ₫",
+    },
+    {
+      id: "topping-6",
+      name: "Thêm Phomai lát",
+      price: "10,000 ₫",
+    },
+    {
+      id: "topping-7",
+      name: "Không hành",
+      price: "0 ₫",
+    },
+    {
+      id: "topping-8",
+      name: "Thêm cay",
+      price: "0 ₫",
+    },
     ];
     resolve(toppings);
   });
@@ -189,12 +274,11 @@ const fetchToppingsByProduct = (_productId: string) => {
 const fetchToppingsForRice = (_productId: string) => {
   return new Promise((resolve) => {
     const toppings = [
-      {
-        id: "1",
-        name: "Rice",
-        price: "5,000 VND",
-        quantity: 0,
-      }
+    {
+      id: "topping-1",
+      name: "Thêm cơm",
+      price: "5,000 ₫",
+    },
     ];
     resolve(toppings);
   });
@@ -203,7 +287,7 @@ const fetchToppingsForRice = (_productId: string) => {
 
 
 function App() {
-  const [activeSection, setActiveSection] = useState(categories[0]);
+  const [activeSection, setActiveSection] = useState(categories[0].key);
   const [menuItems, setMenuItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [cart, setCart] = useState<any[]>([]);
@@ -263,13 +347,13 @@ const addToCart = (product: any) => {
 };
 
 
-  useEffect(() => {
-    setLoading(true);
-    fetchProductsByCategory(activeSection).then((items: any) => {
-      setMenuItems(items);
-      setLoading(false);
-    });
-  }, [activeSection]);
+useEffect(() => {
+  setLoading(true);
+  fetchProductsByCategory(activeSection).then((items: any) => {
+    setMenuItems(items);
+    setLoading(false);
+  });
+}, [activeSection]);
 
   // Load toppings dynamically depending on category
   useEffect(() => {
@@ -318,15 +402,15 @@ const addToCart = (product: any) => {
         <aside className="w-1/4 bg-white shadow-inner border-r-2 border-red-100 overflow-y-auto">
           {categories.map((section) => (
             <button
-              key={section}
-              onClick={() => setActiveSection(section)}
+              key={section.key}
+              onClick={() => setActiveSection(section.key)}
               className={`block w-full text-left px-4 py-3 mb-2 rounded-lg font-medium transition-all
-                ${activeSection === section
+                ${activeSection === section.key
                   ? "bg-black text-white font-semibold shadow-md scale-105"
                   : "text-gray-700 hover:bg-black hover:text-white hover:scale-105"
                 }`}
             >
-              {section}
+              {section.label}
             </button>
           ))}
         </aside>
@@ -531,7 +615,7 @@ const addToCart = (product: any) => {
                               0
                             )
                             : 0)
-                        ).toLocaleString()} VND
+                        ).toLocaleString()} đ
                       </div>
                     </div>
                   </li>
@@ -558,7 +642,7 @@ const addToCart = (product: any) => {
                         : 0;
 
                       return acc + (numericPrice + toppingTotal) * (item.quantity || 1);
-                    }, 0).toLocaleString()} VND
+                    }, 0).toLocaleString()} đ
 
                   </span>
                 </div>
@@ -640,7 +724,7 @@ const addToCart = (product: any) => {
                 }, 0)
                 : 0;
               return acc + numericPrice * (item.quantity || 1) + toppingTotal;
-            }, 0).toLocaleString()} VND
+            }, 0).toLocaleString()} đ
           </h1>
         </div>
       )}
