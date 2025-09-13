@@ -127,47 +127,47 @@ function Kitchen() {
               return prev;
             });
           }
-                // Handle UPDATE
-if (payload.eventType === "UPDATE") {
-  const raw = payload.new as any;
+          // Handle UPDATE
+          if (payload.eventType === "UPDATE") {
+            const raw = payload.new as any;
 
-  const updatedOrder: Order = {
-    id: Number(raw.id), // ensure id is number
-    name: raw.name,
-    price: raw.price,
-    quantity: raw.quantity,
-    status: raw.status,
-    table: raw.table,
-    created_at: raw.created_at,
-    toppings: Array.isArray(raw.toppings)
-      ? raw.toppings
-      : raw.toppings
-        ? JSON.parse(raw.toppings)
-        : [],
-  };
+            const updatedOrder: Order = {
+              id: Number(raw.id), // ensure id is number
+              name: raw.name,
+              price: raw.price,
+              quantity: raw.quantity,
+              status: raw.status,
+              table: raw.table,
+              created_at: raw.created_at,
+              toppings: Array.isArray(raw.toppings)
+                ? raw.toppings
+                : raw.toppings
+                  ? JSON.parse(raw.toppings)
+                  : [],
+            };
 
-  setProducts((prev) => {
-    if (updatedOrder.status === "Paid") {
-      // Remove this order from products
-      const remainingProducts = prev.filter(p => p.id !== updatedOrder.id);
+            setProducts((prev) => {
+              if (updatedOrder.status === "Paid") {
+                // Remove this order from products
+                const remainingProducts = prev.filter(p => p.id !== updatedOrder.id);
 
-      // Remove table if no remaining orders for this table
-      const tableHasOrders = remainingProducts.some(p => p.table === updatedOrder.table);
-      if (!tableHasOrders) {
-        setTables((prevTables) =>
-          prevTables.filter(t => t.id !== updatedOrder.table)
-        );
-      }
+                // Remove table if no remaining orders for this table
+                const tableHasOrders = remainingProducts.some(p => p.table === updatedOrder.table);
+                if (!tableHasOrders) {
+                  setTables((prevTables) =>
+                    prevTables.filter(t => t.id !== updatedOrder.table)
+                  );
+                }
 
-      return remainingProducts;
-    }
+                return remainingProducts;
+              }
 
-    // Otherwise, update the order normally
-    return prev.map((p) =>
-      p.id === updatedOrder.id ? updatedOrder : p
-    );
-  });
-}
+              // Otherwise, update the order normally
+              return prev.map((p) =>
+                p.id === updatedOrder.id ? updatedOrder : p
+              );
+            });
+          }
 
 
 
@@ -216,113 +216,133 @@ if (payload.eventType === "UPDATE") {
     );
   }
 
-return (
-  <div className="p-4 md:p-6 bg-gray-100 min-h-screen">
-    <h1 className="text-2xl md:text-3xl font-bold mb-6 text-gray-800">
-      Kitchen Dashboard
-    </h1>
+  return (
+    <div className="p-4 md:p-6 bg-gray-100 min-h-screen">
+      <h1 className="text-2xl md:text-3xl font-bold mb-6 text-gray-800">
+        Kitchen Dashboard
+      </h1>
 
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {tables.map((table) => (
-        <div
-          key={table.id}
-          className="bg-white shadow-md rounded-lg p-4 flex flex-col"
-        >
-          <h2 className="text-lg md:text-xl font-semibold mb-3">{table.name}</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {tables.map((table) => {
+          // Determine if table is a takeaway table
+          const isTakeaway = table.id === 20 || table.id === 21 || table.id === 22 || table.id === 23;
 
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead>
-                <tr>
-                  <th className="px-2 py-1 text-left text-xs md:text-sm font-medium text-gray-500">
-                    Product
-                  </th>
-                  <th className="px-2 py-1 text-left text-xs md:text-sm font-medium text-gray-500">
-                    Toppings
-                  </th>
-                  <th className="px-2 py-1 text-left text-xs md:text-sm font-medium text-gray-500">
-                    Status
-                  </th>
-                  <th className="px-2 py-1 text-left text-xs md:text-sm font-medium text-gray-500">
-                    Action
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {products
-                  .filter((p) => p.table === table.id)
-                  .map((product) => (
-                    <tr key={product.id}>
-                      <td className="px-2 py-1 text-gray-700 text-xs md:text-sm">
-                        {product.name}
-                      </td>
-                      <td className="px-2 py-1 text-gray-700 text-xs md:text-sm">
-                        {Array.isArray(product.toppings) &&
-                        product.toppings.length > 0
-                          ? product.toppings
-                              .map((t: any) =>
-                                typeof t === "string"
-                                  ? t
-                                  : `${t.name} (x${t.quantity || 1})`
-                              )
-                              .join(", ")
-                          : "-"}
-                      </td>
-                      <td
-                        className={`px-2 py-1 font-semibold text-xs md:text-sm ${
-                          product.status === "Cooking"
-                            ? "text-green-600"
-                            : product.status === "Completed"
-                            ? "text-gray-400"
-                            : "text-yellow-600"
-                        }`}
-                      >
-                        {product.status}
-                      </td>
-                      <td className="px-2 py-1 text-xs md:text-sm">
-                        {product.status === "Pending" && (
-                          <button
-                            className="px-2 py-1 text-xs md:text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
-                            onClick={() => handleStatusChange(product.id)}
-                          >
-                            Complete
-                          </button>
-                        )}
+          const takeawayLabel =
+            table.id === 20
+              ? "Takeaway 1"
+              : table.id === 21
+                ? "Takeaway 2"
+                : table.id === 22
+                  ? "Takeaway 3"
+                  : table.id === 23
+                    ? "Takeaway 4"
+                    : table.name;
 
-                        {product.status === "Completed" && (
-                          <button
-                            className="px-2 py-1 text-xs md:text-sm bg-gray-400 text-white rounded cursor-not-allowed"
-                            disabled
-                          >
-                            Completed
-                          </button>
-                        )}
-                      </td>
+          return (
+            <div
+              key={table.id}
+              className={`shadow-md rounded-lg p-4 flex flex-col ${isTakeaway ? "bg-yellow-100 border-2 border-yellow-400" : "bg-white"
+                }`}
+            >
+              <h2 className="text-lg md:text-xl font-semibold mb-3">
+                {takeawayLabel}
+              </h2>
+
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead>
+                    <tr>
+                      <th className="px-2 py-1 text-left text-xs md:text-sm font-medium text-gray-500">
+                        Products
+                      </th>
+                      <th className="px-2 py-1 text-left text-xs md:text-sm font-medium text-gray-500">
+                        Toppings
+                      </th>
+                      <th className="px-2 py-1 text-left text-xs md:text-sm font-medium text-gray-500">
+                        Status
+                      </th>
+                      <th className="px-2 py-1 text-left text-xs md:text-sm font-medium text-gray-500">
+                        Action
+                      </th>
                     </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {products
+                      .filter((p) => p.table === table.id)
+                      .map((product) => (
+                        <tr key={product.id}>
+<td className="px-2 py-1 text-gray-700 text-xs md:text-sm">
+  {product.name} {product.quantity > 1 && `(x${product.quantity})`}
+</td>
 
-          {/* Payment button if all orders are completed */}
-          {products.filter((p) => p.table === table.id).length > 0 &&
-            products
-              .filter((p) => p.table === table.id)
-              .every((p) => p.status === "Completed") && (
-              <div className="mt-4">
-                <button
-                  className="w-full px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-                  onClick={() => handlePayment(table.id)}
-                >
-                  Proceed to Payment
-                </button>
+                          <td className="px-2 py-1 text-gray-700 text-xs md:text-sm">
+                            {Array.isArray(product.toppings) &&
+                              product.toppings.length > 0
+                              ? product.toppings
+                                .map((t: any) =>
+                                  typeof t === "string"
+                                    ? t
+                                    : `${t.name} (x${t.quantity || 1})`
+                                )
+                                .join(", ")
+                              : "-"}
+                          </td>
+                          <td
+                            className={`px-2 py-1 font-semibold text-xs md:text-sm ${product.status === "Cooking"
+                                ? "text-green-600"
+                                : product.status === "Completed"
+                                  ? "text-gray-400"
+                                  : "text-yellow-600"
+                              }`}
+                          >
+                            {product.status}
+                          </td>
+                          <td className="px-2 py-1 text-xs md:text-sm">
+                            {product.status === "Pending" && (
+                              <button
+                                className="px-2 py-1 text-xs md:text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                                onClick={() => handleStatusChange(product.id)}
+                              >
+                                Complete
+                              </button>
+                            )}
+
+                            {product.status === "Completed" && (
+                              <button
+                                className="px-2 py-1 text-xs md:text-sm bg-gray-400 text-white rounded cursor-not-allowed"
+                                disabled
+                              >
+                                Completed
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
               </div>
-            )}
-        </div>
-      ))}
+
+              {/* Payment button */}
+              {products.filter((p) => p.table === table.id).length > 0 &&
+                products
+                  .filter((p) => p.table === table.id)
+                  .every((p) => p.status === "Completed") && (
+                  <div className="mt-4">
+                    <button
+                      className="w-full px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                      onClick={() => handlePayment(table.id)}
+                    >
+                      Proceed to Payment
+                    </button>
+                  </div>
+                )}
+            </div>
+          );
+        })}
+
+      </div>
     </div>
-  </div>
-);
+  );
 
 }
 

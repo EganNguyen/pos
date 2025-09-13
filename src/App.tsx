@@ -583,6 +583,7 @@ const addToCart = (product: any) => {
                         setCart([]);
                         setIsCartOpen(false);
                         setIsCompleteModalOpen(true); // open Complete modal
+                        setIsFloatingCartVisible(true);
                       } else {
                         alert("Checkout failed! Please try again.");
                       }
