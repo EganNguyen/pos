@@ -18,36 +18,42 @@ const productsByCategory: Record<string, any[]> = {
       id: "noodles-1",
       image: "/tonkotsu-ramen.jpg",
       name: "Mì Nước Truyền Thống Tonkotsu Ramen",
+      description: "Nước dùng xương heo hầm trong 12 tiếng, thịt xá xíu, trứng lòng đào, nấm mèo, hành lá và rong biển \n\n Classic Tonkotsu ramen with pork broth simmered for 12 hours, sliced pork, half boiled egg, wood ear mushroom, green onion and seaweed.",
       price: "60,000 ₫",
     },
     {
       id: "noodles-2",
       image: "/spicy-ramen.jpg",
       name: "Mì cay phomai Spicy Tonkotsu ramen",
+      description: "Nước dùng xương heo hầm trong 12 tiếng, thịt xá xíu, trứng lòng đào, nấm mèo, hành lá, phomai và rong biển \n\n Spicy Tonkotsu ramen with pork broth simmered for 12 hours, sliced pork, half boiled egg, wood ear mushroom, green onion, cheese and seaweed.",
       price: "70,000 ₫",
     },
     {
       id: "noodles-3",
       image: "/udon.jpg",
       name: "Mì udon ( Tempura Niku Udon )",
+      description: "Mì udon sợi to ăn kèm thịt bò Mỹ, hành lá và tempura gà chiên giòn \n\n Thick udon noodles with sliced beef, green onion and crispy fried chicken tempura.",
       price: "70,000 ₫",
     },
     {
       id: "noodles-4",
       image: "/teriyaki-ramen.jpg",
       name: "Mì Trộn Teriyaki ramen",
+      description: "Mì ramen trộn sốt teriyaki, thịt xá xíu, trứng lòng đào, nấm mèo, hành lá và rong biển \n\n Ramen noodles mixed with teriyaki sauce, sliced pork, half boiled egg, wood ear mushroom, green onion and seaweed.",
       price: "60,000 ₫",
     },
     {
       id: "noodles-5",
       image: "/miso-cheese-ramen.jpg",
       name: "Miso Cheese Ramen",
+      description: "Nước dùng miso đậm đà, thịt xá xíu, trứng lòng đào, nấm mèo, hành lá, phomai và rong biển \n\n Rich miso ramen with sliced pork, half boiled egg, wood ear mushroom, green onion, cheese and seaweed.",
       price: "70,000 ₫",
     },
     {
       id: "noodles-6",
       image: "/miso.jpg",
       name: "Miso Tantanmen",
+      description: "Nước dùng miso đậm đà, thịt xá xíu, trứng lòng đào, nấm mèo, hành lá và rong biển \n\n Rich miso ramen with sliced pork, half boiled egg, wood ear mushroom, green onion and seaweed.",
       price: "55,000 ₫",
     }
   ],
@@ -56,20 +62,21 @@ const productsByCategory: Record<string, any[]> = {
       id: "rice-1",
       image: "/gyudon.jpg",
       name: "Gyudon ( Cơm bò )",
-      description: "Cơm bò Mỹ trứng lòng đào với sốt dashi đậm đà sánh quyện /n Beef rice bowl with half boiled egg, onion and special dashi sauce.",
+      description: "Cơm bò Mỹ trứng lòng đào với sốt dashi đậm đà sánh quyện \n\n Beef rice bowl with half boiled egg, onion and special dashi sauce.",
       price: "70,000 đ",
     },
     {
       id: "rice-2",
       image: "/omurice.jpg",
       name: "Egg Rice",
-      description: "Cơm chiên thịt heo bọc trứng kèm phomai lát và sốt bò hầm rau củ đặc biệt /n Omelette fried rice with beef demi glaze sauce and slided cheese",
+      description: "Cơm chiên thịt heo bọc trứng kèm phomai lát và sốt bò hầm rau củ đặc biệt \n\n Omelette fried rice with beef demi glaze sauce and slided cheese",
       price: "70,000 đ",
     },
       {
       id: "rice-3",
       image: "/katsudon.jpg",
       name: "Cơm heo ( Katsudon )",
+      description: "Cơm trắng ăn kèm cốt lết heo chiên giòn, trứng và hành lá \n\n Pork cutlet rice bowl with egg and onion",
       price: "70,000 ₫",
     },
   ],
@@ -78,6 +85,7 @@ const productsByCategory: Record<string, any[]> = {
       id: "Specialty-1",
       image: "/TSUKEMEN.jpg",
       name: "MÌ CHẤM SÚP TÔM TSUKEMEN",
+      description: "Mì sợi to chấm với súp tôm đặc biệt, ăn kèm trứng và thịt xá xíu \n\n Thick noodles served with special shrimp soup, half boiled egg and sliced pork",
       price: "100,000 đ",
     },
   ],
@@ -86,18 +94,21 @@ const productsByCategory: Record<string, any[]> = {
       id: "side-1",
       image: "/toriten.jpg",
       name: "Toriten ( Tempura gà )",
+      description: "Gà chiên giòn ăn kèm sốt chua ngọt \n\n Crispy fried chicken with sweet and sour sauce",
       price: "30,000 ₫",
     },
     {
       id: "side-2",
       image: "/tonkatsu.jpg",
       name: "Cốt lết heo ( Tonkatsu )",
+      description: "Cốt lết heo chiên giòn ăn kèm sốt Tonkatsu đặc biệt \n\n Crispy pork cutlet with special tonkatsu sauce",
       price: "40,000 ₫",
     },
     {
       id: "side-3",
       image: "/miso-soup.jpg",
       name: "Miso soup",
+      description: "Súp miso truyền thống \n\n Traditional miso soup",
       price: "15,000 ₫",
     },
   ],
@@ -106,18 +117,21 @@ const productsByCategory: Record<string, any[]> = {
       id: "drink-1",
       image: "/soda-ginger.jpg",
       name: "Soda Chanh Gừng",
+      description: "Nước soda chanh gừng tươi mát \n\n Fresh ginger lemon soda",
       price: "25,000 ₫",
     },
     {
       id: "drink-2",
       image: "/rice-milk.jpg",
       name: "Sữa gạo rang",
+      description: "Sữa gạo rang thơm béo \n\n Roasted rice milk",
       price: "25,000 ₫",
     },
     {
       id: "drink-3",
       image: "/jasmine-milk-tea.jpg",
       name: "Trà sữa lài ủ lạnh",
+      description: "Trà sữa lài ủ lạnh thơm mát \n\n Iced jasmine milk tea",
       price: "25,000 ₫",
     },
     {
@@ -161,7 +175,12 @@ const fetchProductsByCategory = (category: string) => {
 const completeOrderApi = async (cart: any[]) => {
   const url = "https://gsymrhydnwutflpnzkid.supabase.co/functions/v1/create-order";
   const params = new URLSearchParams(window.location.search);
-  const table = params.get("table") || null;
+  const table = params.get("table");
+
+   if (!table) {
+      // Redirect to error page if table param is missing
+      window.location.href = "/error"; // replace with your error page URL
+    }
 
   const parsePrice = (p: any) => {
     if (typeof p === "number") return p;
@@ -187,6 +206,8 @@ const completeOrderApi = async (cart: any[]) => {
     );
 
     const totalLinePrice = (unitPrice + toppingsTotal) * qty;
+
+
 
     return {
       table,
@@ -287,6 +308,14 @@ const fetchToppingsForRice = (_productId: string) => {
 
 
 function App() {
+    // Check table parameter on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const table = params.get("table");
+    if (!table) {
+      window.location.href = "/error";
+    }
+  }, []);
   const [activeSection, setActiveSection] = useState(categories[0].key);
   const [menuItems, setMenuItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -294,36 +323,52 @@ function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
   const [isFloatingCartVisible, setIsFloatingCartVisible] = useState(true);
-  const addToCartWithToppings = (product: any, toppings: any[] = []) => {
-    const selectedToppings = toppings
-      .filter(t => t.quantity > 0)
-      .map(t => ({ ...t }));
+  // inside App component
+const [productQuantity, setProductQuantity] = useState(1);
+    const getLineTotal = (item: any) => {
+  const basePrice = Number(item.price.replace(/\D/g, ""));
+  const toppingsTotal = item.toppings
+    ? item.toppings.reduce(
+        (sum: number, t: any) => sum + Number(t.price.replace(/\D/g, "")) * (t.quantity || 0),
+        0
+      )
+    : 0;
+  return (basePrice + toppingsTotal) * (item.quantity || 1);
+};
 
-    setCart(prev => {
-      const normalize = (toppings: any[]) =>
-        (toppings || [])
-          .map(t => ({ id: t.id, quantity: t.quantity || 0 }))
-          .sort((a, b) => a.id.localeCompare(b.id));
 
-      const existingIndex = prev.findIndex(
-        item =>
-          item.id === product.id &&
-          JSON.stringify(normalize(item.toppings)) ===
-          JSON.stringify(normalize(selectedToppings))
-      );
 
-      if (existingIndex !== -1) {
-        const updated = [...prev];
-        updated[existingIndex] = {
-          ...updated[existingIndex],
-          quantity: (updated[existingIndex].quantity || 1) + 1
-        };
-        return updated;
-      }
+const addToCartWithToppings = (product: any, toppings: any[] = [], productQuantity: number = 1) => {
+  const selectedToppings = toppings
+    .filter(t => t.quantity > 0)
+    .map(t => ({ ...t }));
 
-      return [...prev, { ...product, quantity: 1, toppings: selectedToppings }];
-    });
-  };
+  setCart(prev => {
+    const normalize = (toppings: any[]) =>
+      (toppings || [])
+        .map(t => ({ id: t.id, quantity: t.quantity || 0 }))
+        .sort((a, b) => a.id.localeCompare(b.id));
+
+    const existingIndex = prev.findIndex(
+      item =>
+        item.id === product.id &&
+        JSON.stringify(normalize(item.toppings)) ===
+        JSON.stringify(normalize(selectedToppings))
+    );
+
+    if (existingIndex !== -1) {
+      const updated = [...prev];
+      updated[existingIndex] = {
+        ...updated[existingIndex],
+        quantity: (updated[existingIndex].quantity || 0) + productQuantity
+      };
+      return updated;
+    }
+
+    return [...prev, { ...product, quantity: productQuantity, toppings: selectedToppings }];
+  });
+};
+
 
 
   // states for detail modal
@@ -354,17 +399,25 @@ useEffect(() => {
     setLoading(false);
   });
 }, [activeSection]);
+// Reset quantity when opening detail modal
+useEffect(() => {
+  if (isDetailModalOpen) {
+    setProductQuantity(1);
+  }
+}, [isDetailModalOpen]);
 
   // Load toppings dynamically depending on category
   useEffect(() => {
     if (isDetailModalOpen && selectedProduct) {
       if (activeSection === "Noodles") {
         fetchToppingsByProduct(selectedProduct.id).then((items: any) => {
-          setToppings(items);
+          setToppings(items.map((t: any) => ({ ...t, quantity: 0 })));
+
         });
       } else if (activeSection === "Rice") {
         fetchToppingsForRice(selectedProduct.id).then((items: any) => {
-          setToppings(items);
+          setToppings(items.map((t: any) => ({ ...t, quantity: 0 })));
+
         });
       } else {
         setToppings([]); // no toppings for other categories
@@ -436,20 +489,22 @@ useEffect(() => {
                       className="w-full h-48 object-cover"
                     />
                     {/* Add to Cart button (stops click bubbling) */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (activeSection === "Noodles" || activeSection === "Rice") {
-                          setSelectedProduct(item);
-                          setIsDetailModalOpen(true);
-                        } else {
-                          addToCart(item);
-                        }
-                      }}
-                      className="absolute bottom-2 right-2 bg-black text-white w-10 h-10 flex items-center justify-center rounded-full hover:bg-red-700 transition border-white border-4"
-                    >
-                      +
-                    </button>
+<button
+  onClick={(e) => {
+    e.stopPropagation();
+    if (activeSection === "Noodles" || activeSection === "Rice") {
+      setSelectedProduct(item);
+      setIsDetailModalOpen(true);
+    } else {
+      addToCart(item);
+    }
+  }}
+  className="absolute bottom-2 right-2 bg-black text-white w-10 h-10 flex items-center justify-center rounded-full hover:bg-red-700 transition border-white border-4"
+>
+  {/* Show quantity if in cart, else "+" */}
+  {cart.find(ci => ci.id === item.id && (!ci.toppings || ci.toppings.length === 0))?.quantity || "+"}
+</button>
+
 
 
                   </div>
@@ -476,12 +531,32 @@ useEffect(() => {
               />
 
               <h2 className="text-xl md:text-2xl font-bold mb-2">{selectedProduct.name}</h2>
-              <p className="text-gray-600 mb-4 text-sm sm:text-base">
-                This is a delicious {selectedProduct.name}. Perfect for your meal!
+              <p className="text-gray-600 mb-4 text-sm sm:text-base whitespace-pre-line">
+                {selectedProduct.description}
               </p>
-              <div className="flex justify-between items-center mb-4 text-sm sm:text-base">
-                <span className="font-semibold">{selectedProduct.price}</span>
-              </div>
+<div className="flex justify-between items-center mb-4 text-sm sm:text-base">
+  <span className="font-semibold">{selectedProduct.price}</span>
+  
+  <div className="flex items-center gap-2">
+    <button
+      onClick={() => setProductQuantity((q) => Math.max(1, q - 1))}
+      className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+    >
+      -
+    </button>
+    <span className="min-w-[24px] text-center">{productQuantity}</span>
+    <button
+      onClick={() => setProductQuantity((q) => q + 1)}
+      className="px-3 py-1 bg-black text-white rounded hover:bg-red-700"
+    >
+      +
+    </button>
+  </div>
+</div>
+
+              {/* Quantity Selector */}
+
+
 
               {(activeSection === "Noodles" || activeSection === "Rice") && (
                 <div className="mt-4">
@@ -529,7 +604,7 @@ useEffect(() => {
                     onClick={(e) => {
                       e.stopPropagation();
                       if (selectedProduct) {
-                        addToCartWithToppings(selectedProduct, toppings);
+                        addToCartWithToppings(selectedProduct, toppings, productQuantity);
                       }
                       setIsDetailModalOpen(false);
                     }}
@@ -606,17 +681,10 @@ useEffect(() => {
                         )}
                       </div>
 
-                      <div className="text-black font-bold">
-                        {(Number(item.price.replace(/\D/g, "")) * (item.quantity || 1) +
-                          (item.toppings
-                            ? item.toppings.reduce(
-                              (sum: number, t: any) =>
-                                sum + Number(t.price.replace(/\D/g, "")) * (t.quantity || 0),
-                              0
-                            )
-                            : 0)
-                        ).toLocaleString()} đ
-                      </div>
+<div className="text-black font-bold">
+  {getLineTotal(item)} đ
+</div>
+
                     </div>
                   </li>
                 ))}
@@ -640,8 +708,8 @@ useEffect(() => {
                           return sum + toppingPrice * (t.quantity || 0);
                         }, 0)
                         : 0;
-
-                      return acc + (numericPrice + toppingTotal) * (item.quantity || 1);
+                  const total = acc + getLineTotal(item);
+                      return total;
                     }, 0).toLocaleString()} đ
 
                   </span>
@@ -700,7 +768,6 @@ useEffect(() => {
         </div>
       )}
 
-      {/* Floating Cart Button (bottom, wide with cart + total) */}
       {/* Floating Cart Button */}
       {isFloatingCartVisible && !isCartOpen && (
         <div
@@ -716,14 +783,8 @@ useEffect(() => {
 
           <h1 className="text-xl font-bold">
             {cart.reduce((acc, item) => {
-              const numericPrice = Number(item.price.replace(/\D/g, ""));
-              const toppingTotal = item.toppings
-                ? item.toppings.reduce((sum: number, t: any) => {
-                  const toppingPrice = Number(t.price.replace(/\D/g, ""));
-                  return sum + toppingPrice * (t.quantity || 0);
-                }, 0)
-                : 0;
-              return acc + numericPrice * (item.quantity || 1) + toppingTotal;
+              const total = cart.reduce((acc, item) => acc + getLineTotal(item), 0);
+              return total;
             }, 0).toLocaleString()} đ
           </h1>
         </div>
