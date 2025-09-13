@@ -736,15 +736,6 @@ useEffect(() => {
                   <span>Total ({cart.reduce((acc, item) => acc + (item.quantity || 1), 0)} Items)</span>
                   <span className="text-black font-bold">
                     {cart.reduce((acc, item) => {
-                      const numericPrice = Number(item.price.replace(/\D/g, ""));
-
-                      // Add topping prices too
-                      const toppingTotal = item.toppings
-                        ? item.toppings.reduce((sum: number, t: any) => {
-                          const toppingPrice = Number(t.price.replace(/\D/g, ""));
-                          return sum + toppingPrice * (t.quantity || 0);
-                        }, 0)
-                        : 0;
                   const total = acc + getLineTotal(item);
                       return total;
                     }, 0).toLocaleString()} đ
@@ -819,7 +810,7 @@ useEffect(() => {
           </h1>
 
           <h1 className="text-xl font-bold">
-            {cart.reduce((acc, item) => {
+            {cart.reduce(() => {
               const total = cart.reduce((acc, item) => acc + getLineTotal(item), 0);
               return total;
             }, 0).toLocaleString()} đ
