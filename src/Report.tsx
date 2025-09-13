@@ -80,7 +80,7 @@ const fetchProducts = async () => {
 
   // Summary
   const totalOrders = products.reduce((sum, p) => sum + p.quantity, 0);
-  const totalRevenue = products.reduce((sum, p) => sum + p.quantity * p.price, 0);
+  const totalRevenue = products.reduce((sum, p) => sum + p.price, 0);
   const bestseller = products.sort((a, b) => b.quantity - a.quantity)[0]?.name || "-";
 
   // Export Excel
