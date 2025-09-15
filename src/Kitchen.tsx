@@ -11,6 +11,7 @@
 // Allow cancel the order that is in Pending status, request api cancel-order. - to do
 // Enable choosing payment method (cash, tranfer) when processing payment. - to do
 
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import "./App.css";
@@ -71,10 +72,21 @@ const fetchKitchenData = async () => {
 
 
 function Kitchen() {
+    const navigate = useNavigate();
   const [tables, setTables] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTables, setSelectedTables] = useState<Record<string, string>>({});
+
+      useEffect(() => {
+    const username = localStorage.getItem("username");
+    const password = localStorage.getItem("password");
+
+    if (username != 'nhanvien' && password != 'mamaramen321') {
+      // If credentials not found, redirect to login
+      navigate("/login", { replace: true });
+    }
+  }, [navigate]);
 
 
 

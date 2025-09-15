@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import "./App.css";
 
@@ -28,6 +29,7 @@ type Order = {
 
 
 function Report() {
+  const navigate = useNavigate();
   const today = new Date();
   const formattedDay = today.toISOString().split("T")[0]; // YYYY-MM-DD
   const formattedMonth = `${today.getFullYear()}-${(today.getMonth() + 1)
@@ -49,9 +51,16 @@ function Report() {
   const [viewType, setViewType] = useState<"products" | "orders">("products");
   const [orders, setOrders] = useState<Order[]>([]);
 
+    useEffect(() => {
+    const username = localStorage.getItem("admin");
+    const password = localStorage.getItem("adminpassword");
 
+    if (username != 'admin' && password != 'reportforadmin321') {
+      // If credentials not found, redirect to login
+      navigate("/login", { replace: true });
+    }
+  }, [navigate]);
 
-  // Fetch report data based on type
 // Fetch report data based on type
 const fetchProducts = async () => {
   setLoading(true);
