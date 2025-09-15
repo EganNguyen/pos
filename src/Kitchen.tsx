@@ -401,22 +401,28 @@ function Kitchen() {
                       .filter((p) => p.table === table.id)
                       .map((product) => (
                         <tr key={product.id}>
-                          <td className="px-2 py-1 text-gray-700 text-xs md:text-sm">
-                            {product.name}{" "}
-                            {product.quantity > 1 && `(x${product.quantity})`}
-                          </td>
-                          <td className="px-2 py-1 text-gray-700 text-xs md:text-sm">
-                            {Array.isArray(product.toppings) &&
-                              product.toppings.length > 0
-                              ? product.toppings
-                                .map((t: any) =>
-                                  typeof t === "string"
-                                    ? t
-                                    : `${t.name} (x${t.quantity || 1})`
-                                )
-                                .join(", ")
-                              : "-"}
-                          </td>
+                          <td className="px-2 py-1 text-gray-800 font-bold text-sm md:text-base">
+  {product.name}{" "}
+  {product.quantity > 1 && (
+    <span className="ml-1 bg-indigo-100 text-indigo-800 text-xs px-1 rounded">
+      x{product.quantity}
+    </span>
+  )}
+</td>
+
+     <td className="px-2 py-1 text-gray-700 text-sm md:text-base flex flex-wrap gap-1">
+  {Array.isArray(product.toppings) && product.toppings.length > 0
+    ? product.toppings.map((t: any, i: number) => (
+        <span
+          key={i}
+          className="bg-yellow-100 text-yellow-800 text-xs md:text-sm px-2 py-0.5 rounded-full"
+        >
+          {typeof t === "string" ? t : `${t.name} (x${t.quantity || 1})`}
+        </span>
+      ))
+    : "-"}
+</td>
+
                           <td
                             className={`px-2 py-1 font-semibold text-xs md:text-sm ${product.status === "Cooking"
                               ? "text-green-600"
