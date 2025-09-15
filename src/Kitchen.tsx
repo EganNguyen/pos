@@ -23,20 +23,20 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Hard-coded table list
 const HARD_CODED_TABLES = [
-  "BÀN 1A",
-  "BÀN 1B",
-  "BÀN 2A",
-  "BÀN 2B",
-  "BÀN 3A",
-  "BÀN 3B",
-  "BÀN 4",
-  "BÀN 5",
-  "BÀN 6",
-  "BÀN 7",
-  "BÀN 8",
-  "BÀN 9",
-  "MANG VỀ 1",
-  "MANG VỀ 2",
+  "Bàn 1A",
+  "Bàn 1B",
+  "Bàn 2A",
+  "Bàn 2B",
+  "Bàn 3A",
+  "Bàn 3B",
+  "Bàn 4",
+  "Bàn 5",
+  "Bàn 6",
+  "Bàn 7",
+  "Bàn 8",
+  "Bàn 9",
+  "Mang về 1",
+  "Mang về 2",
 ];
 
 // Fetch kitchen data (initial load)
@@ -325,7 +325,7 @@ function Kitchen() {
   return (
     <div className="p-4 md:p-6 bg-gray-100 min-h-screen">
       <h1 className="text-2xl md:text-3xl font-bold mb-6 text-gray-800">
-        Những bàn đang có đơn
+        Những Bàn đang có đơn
       </h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -334,7 +334,7 @@ function Kitchen() {
           return (
             <div
               key={table.id}
-              className={`shadow-md rounded-lg p-4 flex flex-col ${table.id.includes("MANG VỀ")
+              className={`shadow-md rounded-lg p-4 flex flex-col ${table.id.includes("Mang về")
                 ? "bg-yellow-100 border-2 border-yellow-400"
                 : "bg-white"
                 }`}
@@ -356,7 +356,7 @@ function Kitchen() {
                     }
                     className="border rounded p-1"
                   >
-                    <option value="">--Chọn bàn--</option>
+                    <option value="">--Chọn Bàn--</option>
                     {HARD_CODED_TABLES.map((t, i) => (
                       <option key={i} value={t}>
                         {t}
@@ -371,7 +371,7 @@ function Kitchen() {
                     }
                     disabled={!selectedTables[table.id]}
                   >
-                    Cập nhật bàn
+                    Cập nhật Bàn
                   </button>
 
                 </div>
