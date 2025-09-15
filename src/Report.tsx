@@ -5,9 +5,12 @@ import "./App.css";
 type Product = {
   id: number;
   name: string;
-  category: string;
+  toppings: { name: string; quantity: number }[];
   quantity: number;
+  total_cash: number;
+  total_transfer: number;
   price: number;
+
 };
 
 function Report() {
@@ -19,6 +22,7 @@ function Report() {
   const formattedYear = today.getFullYear().toString();
 
   const [products, setProducts] = useState<Product[]>([]);
+  const [totalOrders, setTotalOrders] = useState<number>(0);
   const [loading, setLoading] = useState(true);
 
   // Report type: "day" | "month" | "year"
@@ -61,9 +65,14 @@ const fetchProducts = async () => {
     const mappedProducts: Product[] = data.products.map((p: any, i: number) => ({
       id: i + 1,
       name: p.name,
+      toppings: p.toppings || [],
       quantity: p.quantity,
+      total_cash: p.total_cash,
+      total_transfer: p.total_transfer,
       price: p.price,
     }));
+
+    setTotalOrders(data.total_order);
 
     setProducts(mappedProducts);
   } catch (error) {
@@ -78,8 +87,8 @@ const fetchProducts = async () => {
     fetchProducts();
   }, [day, monthYear, yearOnly, reportType]);
 
-  // Summary
-  const totalOrders = products.reduce((sum, p) => sum + p.quantity, 0);
+
+  // const totalProducts = products.reduce((sum, p) => sum + p.quantity, 0);
   const totalRevenue = products.reduce((sum, p) => sum + p.price, 0);
   const bestseller = products.sort((a, b) => b.quantity - a.quantity)[0]?.name || "-";
 
@@ -203,7 +212,10 @@ const fetchProducts = async () => {
             <tr className="bg-gray-50 text-gray-700">
               <th className="py-3 px-4 border-b">#</th>
               <th className="py-3 px-4 border-b">Product</th>
+                    <th className="py-3 px-4 border-b">Toppings</th>
               <th className="py-3 px-4 border-b">Quantity</th>
+                    <th className="py-3 px-4 border-b">Cash</th>
+      <th className="py-3 px-4 border-b">Transfer</th>
               <th className="py-3 px-4 border-b">Revenue (VND)</th>
             </tr>
           </thead>
@@ -219,7 +231,26 @@ const fetchProducts = async () => {
                 <tr key={p.id} className="hover:bg-gray-50">
                   <td className="py-3 px-4 border-b">{p.id}</td>
                   <td className="py-3 px-4 border-b">{p.name}</td>
+                            <td className="py-3 px-4 border-b">
+            {p.toppings.length > 0 ? (
+              <ul className="list-disc list-inside">
+                {p.toppings.map((t, idx) => (
+                  <li key={idx}>
+                    {t.name} ({t.quantity})
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <span className="text-gray-400">-</span>
+            )}
+          </td>
                   <td className="py-3 px-4 border-b">{p.quantity}</td>
+                            <td className="py-3 px-4 border-b text-green-600">
+            {p.total_cash.toLocaleString()}
+          </td>
+          <td className="py-3 px-4 border-b text-blue-600">
+            {p.total_transfer.toLocaleString()}
+          </td>
                   <td className="py-3 px-4 border-b">{(p.price).toLocaleString()}</td>
                 </tr>
               ))

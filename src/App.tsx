@@ -1,3 +1,69 @@
+// 1. Categories & Products
+
+// Display menu items grouped into categories (e.g., Mì Ramen/Udon, Cơm, Món Đặc Biệt, Món ăn kèm, Đồ uống, Tráng miệng).
+
+// Categories are shown as buttons/tabs at the top, allowing users to filter products by category.
+
+// Each product card shows:
+
+// Name, description, and image.
+
+// Price (formatted with toLocaleString()).
+
+// “Thêm vào giỏ” button to add it to the cart.
+
+// 2. Cart Functionality
+
+// The cart is displayed in a modal when clicking the cart button.
+
+// Cart items include:
+
+// Product name.
+
+// Quantity with + / – buttons to adjust.
+
+// Toppings (with their names, prices, and quantities).
+
+// Line total (product price + toppings) × quantity.
+
+// Users can remove products or toppings from the cart.
+
+// The total price of the entire cart is shown at the bottom.
+
+// 3. Toppings Modal
+
+// When adding a product, a modal appears for selecting optional toppings.
+
+// Each topping:
+
+// Has a name, price, and + / – buttons to set quantity.
+
+// Users confirm by clicking “Thêm vào giỏ.”
+
+// Selected toppings are saved along with the product in the cart.
+
+// 4. Utilities & Styling
+
+// Utility functions for:
+
+// Parsing prices from strings (e.g., "70,000" → 70000).
+
+// Calculating line totals for cart items (product + toppings × quantity).
+
+// Responsive grid layout for products.
+
+// Tailwind CSS styling for buttons, modals, grid, and cards.
+
+// Fixed cart button at the bottom-right corner, showing the current cart total.
+
+// 5. Tech stack
+
+// React (with hooks useState, useEffect).
+
+// Tailwind CSS for styling.
+
+// Custom CSS for extra styles.
+
 import { useState, useEffect } from "react";
 import "./App.css";
 
@@ -597,7 +663,7 @@ useEffect(() => {
 
               {(activeSection === "Noodles" || activeSection === "Rice") && (
                 <div className="mt-4">
-                  <h3 className="font-semibold mb-2 text-sm sm:text-base">Choose Toppings</h3>
+                  <h3 className="font-semibold mb-2 text-sm sm:text-base">Chọn Toppings</h3>
                   <ul className="space-y-2 max-h-64 overflow-y-auto">
                     {toppings.map((topping, index) => (
                       <li key={topping.id} className="flex justify-between items-center text-sm sm:text-base">
@@ -656,7 +722,7 @@ useEffect(() => {
                     >
                       <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 3c0 .55.45 1 1 1h1l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h11c.55 0 1-.45 1-1s-.45-1-1-1H7l1.1-2h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.37-.66-.11-1.48-.87-1.48H5.21l-.67-1.43c-.16-.35-.52-.57-.9-.57H2c-.55 0-1 .45-1 1zm16 15c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"></path>
                     </svg>
-                    Add to Cart
+                    Thêm vào giỏ
                   </button>
 
 
@@ -664,7 +730,7 @@ useEffect(() => {
                     onClick={() => setIsDetailModalOpen(false)}
                     className="flex-[1] bg-white text-black py-3 rounded-xl font-semibold text-lg shadow-md hover:bg-gray-200 transition border border-black"
                   >
-                    X Close
+                    X Đóng
                   </button>
                 </div>
 
@@ -684,10 +750,10 @@ useEffect(() => {
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M2 3.825C2 3.36781 2.37471 3 2.84046 3H4.43383C5.20426 3 5.88713 3.44 6.2058 4.1H20.5987C21.5197 4.1 22.1921 4.95938 21.9504 5.8325L20.5146 11.0678C20.217 12.1472 19.2189 12.9 18.0808 12.9H7.97778L8.16688 13.8797C8.24392 14.2681 8.59061 14.55 8.99333 14.55H19.0894C19.5551 14.55 19.9298 14.9178 19.9298 15.375C19.9298 15.8322 19.5551 16.2 19.0894 16.2H8.99333C7.78167 16.2 6.7416 15.3544 6.51748 14.1891L4.71049 4.87344C4.68597 4.74281 4.57041 4.65 4.43383 4.65H2.84046C2.37471 4.65 2 4.28219 2 3.825ZM6.48246 18.95C6.48246 18.7333 6.52593 18.5188 6.61041 18.3186C6.69488 18.1184 6.8187 17.9365 6.97479 17.7833C7.13087 17.6301 7.31618 17.5085 7.52012 17.4256C7.72406 17.3427 7.94264 17.3 8.16338 17.3C8.38412 17.3 8.6027 17.3427 8.80664 17.4256C9.01058 17.5085 9.19588 17.6301 9.35197 17.7833C9.50806 17.9365 9.63187 18.1184 9.71635 18.3186C9.80082 18.5188 9.8443 18.7333 9.8443 18.95C9.8443 19.1667 9.80082 19.3812 9.71635 19.5814C9.63187 19.7816 9.50806 19.9635 9.35197 20.1167C9.19588 20.2699 9.01058 20.3915 8.80664 20.4744C8.6027 20.5573 8.38412 20.6 8.16338 20.6C7.94264 20.6 7.72406 20.5573 7.52012 20.4744C7.31618 20.3915 7.13087 20.2699 6.97479 20.1167C6.8187 19.9635 6.69488 19.7816 6.61041 19.5814C6.52593 19.3812 6.48246 19.1667 6.48246 18.95ZM18.2489 17.3C18.6947 17.3 19.1223 17.4738 19.4375 17.7833C19.7527 18.0927 19.9298 18.5124 19.9298 18.95C19.9298 19.3876 19.7527 19.8073 19.4375 20.1167C19.1223 20.4262 18.6947 20.6 18.2489 20.6C17.8031 20.6 17.3755 20.4262 17.0603 20.1167C16.7451 19.8073 16.568 19.3876 16.568 18.95C16.568 18.5124 16.7451 18.0927 17.0603 17.7833C17.3755 17.4738 17.8031 17.3 18.2489 17.3Z" fill="currentColor"></path>
               </svg>
-              Items in cart</h2>
+              Số món trong giỏ</h2>
 
             {cart.length === 0 ? (
-              <p className="text-gray-500">No products in the cart.</p>
+              <p className="text-gray-500">Chưa có sản phẩm trong giỏ.</p>
             ) : (
               <ul className="space-y-4">
                 {cart.map((item, index) => (
@@ -733,7 +799,7 @@ useEffect(() => {
             {cart.length > 0 && (
               <div className="mt-6 pt-4 flex flex-col gap-3">
                 <div className="flex justify-between text-gray-700 font-medium">
-                  <span>Total ({cart.reduce((acc, item) => acc + (item.quantity || 1), 0)} Items)</span>
+                  <span>Tổng ({cart.reduce((acc, item) => acc + (item.quantity || 1), 0)} Items)</span>
                   <span className="text-black font-bold">
                     {cart.reduce((acc, item) => {
                   const total = acc + getLineTotal(item);
@@ -751,7 +817,7 @@ useEffect(() => {
                       setIsFloatingCartVisible(true);
                     }}
                   >
-                    Cancel
+                    Hủy
                   </button>
                   <button
                     className="px-4 py-2 bg-black text-white rounded hover:bg-red-700"
@@ -769,7 +835,7 @@ useEffect(() => {
                       }
                     }}
                   >
-                    Complete Order
+                    Hoàn tất đơn hàng
                   </button>
                 </div>
               </div>
@@ -782,16 +848,16 @@ useEffect(() => {
       {isCompleteModalOpen && (
         <div className="fixed inset-0 bg-white bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-80 max-w-sm shadow-lg text-center">
-            <h2 className="text-3xl font-bold text-green-600 mb-4">Complete!</h2>
-            <p className="text-gray-700 mb-6">Your order has been successfully placed.</p>
+            <h2 className="text-3xl font-bold text-green-600 mb-4">Hoàn tất!</h2>
+            <p className="text-gray-700 mb-6">Đơn hàng của bạn đã được đặt thành công.</p>
             <button
               className="px-6 py-2 bg-black text-white rounded hover:bg-red-700"
               onClick={() => setIsCompleteModalOpen(false)}
 
             >
-              Close
+              Đóng
             </button>
-            <div className="mt-4 text-sm text-gray-400">Powered by Mama Ramen</div>
+            <div className="mt-4 text-sm text-gray-400">Được vận hành bởi Mama Ramen</div>
           </div>
         </div>
       )}
@@ -806,7 +872,7 @@ useEffect(() => {
           }}
         >
           <h1 className="text-xl font-bold">
-            Cart ({totalItemsInCart})
+            Giỏ hàng ({totalItemsInCart})
           </h1>
 
           <h1 className="text-xl font-bold">
