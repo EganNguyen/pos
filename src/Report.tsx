@@ -48,10 +48,10 @@ function Report() {
   const [day, setDay] = useState<string>(formattedDay);
   const [monthYear, setMonthYear] = useState<string>(formattedMonth);
   const [yearOnly, setYearOnly] = useState<string>(formattedYear);
-  const [viewType, setViewType] = useState<"products" | "orders">("products");
+  const [viewType, setViewType] = useState<"orders" | "products">("orders");
   const [orders, setOrders] = useState<Order[]>([]);
 
-    useEffect(() => {
+  useEffect(() => {
     const username = localStorage.getItem("admin");
     const password = localStorage.getItem("adminpassword");
 
@@ -61,66 +61,66 @@ function Report() {
     }
   }, [navigate]);
 
-// Fetch report data based on type
-const fetchProducts = async () => {
-  setLoading(true);
-  try {
-    let url = "https://gsymrhydnwutflpnzkid.supabase.co/functions/v1/load-ordered";
+  // Fetch report data based on type
+  const fetchProducts = async () => {
+    setLoading(true);
+    try {
+      let url = "https://gsymrhydnwutflpnzkid.supabase.co/functions/v1/load-ordered";
 
-    if (reportType === "day" && day) {
-      const date = new Date(day);
-      const dayInt = date.getDate(); // 1-31
-      const monthInt = date.getMonth() + 1; // 1-12
-      const yearInt = date.getFullYear();
-      url += `?day=${dayInt}&month=${monthInt}&year=${yearInt}`;
-    } else if (reportType === "month" && monthYear) {
-      const [year, month] = monthYear.split("-").map(Number);
-      url += `?month=${month}&year=${year}`;
-    } else if (reportType === "year" && yearOnly) {
-      url += `?year=${yearOnly}`;
+      if (reportType === "day" && day) {
+        const date = new Date(day);
+        const dayInt = date.getDate(); // 1-31
+        const monthInt = date.getMonth() + 1; // 1-12
+        const yearInt = date.getFullYear();
+        url += `?day=${dayInt}&month=${monthInt}&year=${yearInt}`;
+      } else if (reportType === "month" && monthYear) {
+        const [year, month] = monthYear.split("-").map(Number);
+        url += `?month=${month}&year=${year}`;
+      } else if (reportType === "year" && yearOnly) {
+        url += `?year=${yearOnly}`;
+      }
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch report data");
+
+      const data = await response.json();
+
+      if (viewType === "products") {
+        const mappedProducts: Product[] = data.products.map((p: any, i: number) => ({
+          id: i + 1,
+          name: p.name,
+          toppings: p.toppings || [],
+          quantity: p.quantity,
+          total_cash: p.total_cash,
+          total_transfer: p.total_transfer,
+          price: p.price,
+        }));
+        setProducts(mappedProducts);
+        setTotalOrders(data.total_order);
+      } else {
+        // Orders view
+        const mappedOrders: Order[] = data.orders.map((o: any) => ({
+          unique: o.unique,
+          products: o.products,
+        }));
+        setOrders(mappedOrders);
+        setTotalOrders(mappedOrders.length);
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    } finally {
+      setLoading(false);
     }
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
-
-    if (!response.ok) throw new Error("Failed to fetch report data");
-
-    const data = await response.json();
-
-if (viewType === "products") {
-  const mappedProducts: Product[] = data.products.map((p: any, i: number) => ({
-    id: i + 1,
-    name: p.name,
-    toppings: p.toppings || [],
-    quantity: p.quantity,
-    total_cash: p.total_cash,
-    total_transfer: p.total_transfer,
-    price: p.price,
-  }));
-  setProducts(mappedProducts);
-  setTotalOrders(data.total_order);
-} else {
-  // Orders view
-  const mappedOrders: Order[] = data.orders.map((o: any) => ({
-    unique: o.unique,
-    products: o.products,
-  }));
-  setOrders(mappedOrders);
-  setTotalOrders(mappedOrders.length);
-}
-  } catch (error) {
-    console.error("Error fetching products:", error);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
 
-useEffect(() => {
-  fetchProducts();
-}, [day, monthYear, yearOnly, reportType, viewType]);
+  useEffect(() => {
+    fetchProducts();
+  }, [day, monthYear, yearOnly, reportType, viewType]);
 
 
 
@@ -135,8 +135,8 @@ useEffect(() => {
       reportType === "day"
         ? "Daily Report"
         : reportType === "month"
-        ? "Monthly Report"
-        : "Yearly Report";
+          ? "Monthly Report"
+          : "Yearly Report";
 
     const summaryData = [
       [title],
@@ -168,14 +168,14 @@ useEffect(() => {
           <option value="month">Monthly Report</option>
           <option value="year">Yearly Report</option>
         </select>
-  <select
-    value={viewType}
-    onChange={(e) => setViewType(e.target.value as "products" | "orders")}
-    className="border p-2 rounded"
-  >
-    <option value="products">Products</option>
-    <option value="orders">Orders</option>
-  </select>
+        <select
+          value={viewType}
+          onChange={(e) => setViewType(e.target.value as "orders" | "products")}
+          className="border p-2 rounded"
+        >
+          <option value="orders">Orders</option>
+          <option value="products">Products</option>
+        </select>
 
 
 
@@ -208,121 +208,174 @@ useEffect(() => {
         )}
       </div>
 
-{/* Top Cards */}
-<div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-  {/* Total Products Card */}
-  <div className="bg-white p-4 rounded-lg shadow flex items-center gap-4">
-  <div className="text-blue-500 text-3xl">📋</div>
-  <div>
-    <h2 className="text-gray-500">
-      {viewType === "products"
-        ? reportType === "day" ? "Products Today" : reportType === "month" ? "Products This Month" : "Products This Year"
-        : reportType === "day" ? "Orders Today" : reportType === "month" ? "Orders This Month" : "Orders This Year"}
-    </h2>
-    <p className="text-xl font-bold">{totalOrders}</p>
-  </div>
-</div>
+      {/* Top Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        {/* Total Products / Orders Card */}
+        <div className="bg-white p-4 rounded-lg shadow flex items-center gap-4">
+          <div className="text-blue-500 text-3xl">📋</div>
+          <div>
+            <h2 className="text-gray-500">
+              {viewType === "products"
+                ? reportType === "day"
+                  ? "Products Today"
+                  : reportType === "month"
+                    ? "Products This Month"
+                    : "Products This Year"
+                : reportType === "day"
+                  ? "Orders Today"
+                  : reportType === "month"
+                    ? "Orders This Month"
+                    : "Orders This Year"}
+            </h2>
+            <p className="text-xl font-bold">
+              {viewType === "products"
+                ? products.reduce((sum, p) => sum + p.quantity, 0)
+                : orders.length}
+            </p>
+          </div>
+        </div>
 
 
-  {/* Bestseller Card */}
-  <div className="bg-white p-4 rounded-lg shadow flex items-center gap-4">
-    <div className="text-yellow-500 text-3xl">⭐</div>
-    <div>
-      <h2 className="text-gray-500">Bestseller</h2>
-      <p className="text-xl font-bold">{bestseller}</p>
-    </div>
-  </div>
 
-  {/* Total Revenue Card */}
-  <div className="bg-white p-4 rounded-lg shadow flex items-center gap-4">
-    <div className="text-green-500 text-3xl">📈</div>
-    <div>
-      <h2 className="text-gray-500">
-        {reportType === "day"
-          ? "Today's Revenue"
-          : reportType === "month"
-          ? "Monthly Revenue"
-          : "Yearly Revenue"}
-      </h2>
-      <p className="text-xl font-bold">{totalRevenue.toLocaleString()} VND</p>
-    </div>
-  </div>
-</div>
+        {/* Bestseller Card */}
+        <div className="bg-white p-4 rounded-lg shadow flex items-center gap-4">
+          <div className="text-yellow-500 text-3xl">⭐</div>
+          <div>
+            <h2 className="text-gray-500">Bestseller</h2>
+            <p className="text-xl font-bold">{bestseller}</p>
+          </div>
+        </div>
+
+        {/* Total Cash Revenue Card */}
+        <div className="bg-white p-4 rounded-lg shadow flex items-center gap-4">
+          <div className="text-green-700 text-3xl">💵</div>
+          <div>
+            <h2 className="text-gray-500">Total Cash Revenue</h2>
+            <p className="text-xl font-bold">
+              {products.reduce((sum, p) => sum + p.total_cash, 0).toLocaleString()} VND
+            </p>
+          </div>
+        </div>
+
+        {/* Total Transfer Revenue Card */}
+        <div className="bg-white p-4 rounded-lg shadow flex items-center gap-4">
+          <div className="text-blue-700 text-3xl">🏦</div>
+          <div>
+            <h2 className="text-gray-500">Total Transfer Revenue</h2>
+            <p className="text-xl font-bold">
+              {products.reduce((sum, p) => sum + p.total_transfer, 0).toLocaleString()} VND
+            </p>
+          </div>
+        </div>
+
+        {/* Total Revenue Card */}
+        <div className="bg-white p-4 rounded-lg shadow flex items-center gap-4">
+          <div className="text-green-500 text-3xl">📈</div>
+          <div>
+            <h2 className="text-gray-500">
+              {reportType === "day"
+                ? "Today's Revenue"
+                : reportType === "month"
+                  ? "Monthly Revenue"
+                  : "Yearly Revenue"}
+            </h2>
+            <p className="text-xl font-bold">{totalRevenue.toLocaleString()} VND</p>
+          </div>
+        </div>
+      </div>
 
 
       {/* Products Table */}
       <div className="mt-8 bg-white shadow-lg rounded-2xl border border-gray-200 overflow-hidden">
-<table className="w-full text-left border-collapse">
-  <thead>
-    <tr className="bg-gray-50 text-gray-700">
-      <th className="py-3 px-4 border-b">#</th>
-      <th className="py-3 px-4 border-b">{viewType === "products" ? "Product" : "Order"}</th>
-      <th className="py-3 px-4 border-b">Toppings</th>
-      <th className="py-3 px-4 border-b">Quantity</th>
-      <th className="py-3 px-4 border-b">Cash</th>
-      <th className="py-3 px-4 border-b">Transfer</th>
-      <th className="py-3 px-4 border-b">Revenue (VND)</th>
-    </tr>
-  </thead>
-  <tbody>
-    {loading ? (
-      <tr>
-        <td colSpan={7} className="text-center py-6 text-gray-500">
-          Loading report...
-        </td>
-      </tr>
-    ) : viewType === "products" ? (
-      products.map((p) => (
-        <tr key={p.id} className="hover:bg-gray-50">
-          <td className="py-3 px-4 border-b">{p.id}</td>
-          <td className="py-3 px-4 border-b">{p.name}</td>
-          <td className="py-3 px-4 border-b">
-            {p.toppings.length > 0 ? (
-              <ul className="list-disc list-inside">
-                {p.toppings.map((t, idx) => (
-                  <li key={idx}>{t.name} ({t.quantity})</li>
-                ))}
-              </ul>
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="bg-gray-50 text-gray-700">
+              <th className="py-3 px-4 border-b">#</th>
+              <th className="py-3 px-4 border-b">{viewType === "products" ? "Product" : "Order"}</th>
+              <th className="py-3 px-4 border-b">Toppings</th>
+              <th className="py-3 px-4 border-b">Quantity</th>
+              <th className="py-3 px-4 border-b">Cash</th>
+              <th className="py-3 px-4 border-b">Transfer</th>
+              <th className="py-3 px-4 border-b">Revenue (VND)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr>
+                <td colSpan={7} className="text-center py-6 text-gray-500">
+                  Loading report...
+                </td>
+              </tr>
+            ) : viewType === "products" ? (
+              products.map((p) => (
+                <tr key={p.id} className="hover:bg-gray-50">
+                  <td className="py-3 px-4 border-b">{p.id}</td>
+                  <td className="py-3 px-4 border-b">{p.name}</td>
+                  <td className="py-3 px-4 border-b">
+                    {p.toppings.length > 0 ? (
+                      <ul className="list-disc list-inside">
+                        {p.toppings.map((t, idx) => (
+                          <li key={idx}>{t.name} ({t.quantity})</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <span className="text-gray-400">-</span>
+                    )}
+                  </td>
+                  <td className="py-3 px-4 border-b">{p.quantity}</td>
+                  <td className="py-3 px-4 border-b text-green-600">{p.total_cash.toLocaleString()}</td>
+                  <td className="py-3 px-4 border-b text-blue-600">{p.total_transfer.toLocaleString()}</td>
+                  <td className="py-3 px-4 border-b">{p.price.toLocaleString()}</td>
+                </tr>
+              ))
             ) : (
-              <span className="text-gray-400">-</span>
-            )}
-          </td>
-          <td className="py-3 px-4 border-b">{p.quantity}</td>
-          <td className="py-3 px-4 border-b text-green-600">{p.total_cash.toLocaleString()}</td>
-          <td className="py-3 px-4 border-b text-blue-600">{p.total_transfer.toLocaleString()}</td>
-          <td className="py-3 px-4 border-b">{p.price.toLocaleString()}</td>
-        </tr>
-      ))
-    ) : (
-      orders.map((o, idx) => {
-        const orderTotalQty = o.products.reduce((sum, p) => sum + p.quantity, 0);
-        const orderTotalCash = o.products
-          .filter(p => p.payment_method === "cash")
-          .reduce((sum, p) => sum + p.price, 0);
-        const orderTotalTransfer = o.products
-          .filter(p => p.payment_method === "transfer")
-          .reduce((sum, p) => sum + p.price, 0);
-        const orderRevenue = o.products.reduce((sum, p) => sum + p.price, 0);
+              orders.map((o, idx) => {
+                const orderTotalQty = o.products.reduce((sum, p) => sum + p.quantity, 0);
+                const orderTotalCash = o.products
+                  .filter(p => p.payment_method === "cash")
+                  .reduce((sum, p) => sum + p.price, 0);
+                const orderTotalTransfer = o.products
+                  .filter(p => p.payment_method === "transfer")
+                  .reduce((sum, p) => sum + p.price, 0);
+                const orderRevenue = o.products.reduce((sum, p) => sum + p.price, 0);
 
-        return (
-          <tr key={o.unique} className="hover:bg-gray-50">
-            <td className="py-3 px-4 border-b">{idx + 1}</td>
-            <td className="py-3 px-4 border-b">{o.unique}</td>
-            <td className="py-3 px-4 border-b">
-              {o.products.map((p, i) => (
-                <div key={i}>{p.toppings.map(t => `${t.name} (${t.quantity})`).join(", ") || "-"}</div>
-              ))}
-            </td>
-            <td className="py-3 px-4 border-b">{orderTotalQty}</td>
-            <td className="py-3 px-4 border-b text-green-600">{orderTotalCash.toLocaleString()}</td>
-            <td className="py-3 px-4 border-b text-blue-600">{orderTotalTransfer.toLocaleString()}</td>
-            <td className="py-3 px-4 border-b">{orderRevenue.toLocaleString()}</td>
-          </tr>
-        );
-      })
-    )}
-  </tbody>
-</table>
+                return (
+                  <tr key={o.unique} className="hover:bg-gray-50">
+                    <td className="py-3 px-4 border-b">{idx + 1}</td>
+                    <td className="py-3 px-4 border-b">
+                      {o.products.map((p) => (
+                        <div key={p.name}>
+                          - {p.name}
+                        </div>
+                      ))}
+                    </td>
+                    <td className="py-3 px-4 border-b">
+                      {o.products.map((p, i) => (
+                        <div key={i}>
+                          {p.toppings.length > 0 ? (
+                            <ul className="list-disc list-inside">
+                              {p.toppings.map((t, idx) => (
+                                <li key={idx}>{t.name} ({t.quantity})</li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <span className="text-gray-400">-</span>
+                          )}
+                        </div>
+                      ))}
+                    </td>
+                    <td className="py-3 px-4 border-b">{orderTotalQty}</td>
+                    <td className="py-3 px-4 border-b text-green-600">{orderTotalCash.toLocaleString()}</td>
+                    <td className="py-3 px-4 border-b text-blue-600">{orderTotalTransfer.toLocaleString()}</td>
+                    <td className="py-3 px-4 border-b">{orderRevenue.toLocaleString()}</td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+
+
+        </table>
 
       </div>
 
