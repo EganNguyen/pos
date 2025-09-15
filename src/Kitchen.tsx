@@ -81,8 +81,10 @@ function Kitchen() {
       useEffect(() => {
     const username = localStorage.getItem("username");
     const password = localStorage.getItem("password");
+    const admin = localStorage.getItem("admin");
+    const adminpassword = localStorage.getItem("adminpassword");
 
-    if ((username != 'nhanvien' && password != 'mamaramen321') || (username != 'admin' && password != 'reportforadmin321')) {
+    if ((username != 'nhanvien' && password != 'mamaramen321') || (admin != 'admin' && adminpassword != 'reportforadmin321')) {
       // If credentials not found, redirect to login
       navigate("/login", { replace: true });
     }
