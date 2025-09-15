@@ -79,7 +79,7 @@ const categories = [
 
 // Hardcoded products grouped by category
 const productsByCategory: Record<string, any[]> = {
-   Noodles: [
+  Noodles: [
     {
       id: "noodles-1",
       image: "/tonkotsu-ramen.jpg",
@@ -138,7 +138,7 @@ const productsByCategory: Record<string, any[]> = {
       description: "Cơm chiên thịt heo bọc trứng kèm phomai lát và sốt bò hầm rau củ đặc biệt \n\n Omelette fried rice with beef demi glaze sauce and slided cheese",
       price: "70,000",
     },
-      {
+    {
       id: "rice-3",
       image: "/katsudon.jpg",
       name: "Cơm heo ( Katsudon )",
@@ -146,7 +146,7 @@ const productsByCategory: Record<string, any[]> = {
       price: "70,000",
     },
   ],
-    Specialty: [
+  Specialty: [
     {
       id: "Specialty-1",
       image: "/TSUKEMEN.jpg",
@@ -255,32 +255,32 @@ const completeOrderApi = async (cart: any[]) => {
   };
 
   // Build payload: send unit price and quantity, not total price
-const payload = cart.map((item) => {
-  const unitPrice = parsePrice(item.price);
-  const qty = item.quantity ?? 1;
+  const payload = cart.map((item) => {
+    const unitPrice = parsePrice(item.price);
+    const qty = item.quantity ?? 1;
 
-  const toppingsArr = (item.toppings || []).map((t: any) => ({
-    name: t.name,
-    price: parsePrice(t.price), // unit price of topping
-    quantity: t.quantity ?? 0,  // quantity of topping
-  }));
+    const toppingsArr = (item.toppings || []).map((t: any) => ({
+      name: t.name,
+      price: parsePrice(t.price), // unit price of topping
+      quantity: t.quantity ?? 0,  // quantity of topping
+    }));
 
-  // Total topping price per unit
-const toppingsTotal = toppingsArr.reduce((sum: number, t: { price: number; quantity: number }) => {
-  return sum + t.price * (t.quantity ?? 1);
-}, 0);
+    // Total topping price per unit
+    const toppingsTotal = toppingsArr.reduce((sum: number, t: { price: number; quantity: number }) => {
+      return sum + t.price * (t.quantity ?? 1);
+    }, 0);
 
 
 
-  return {
-    table,
-    name: item.name,
-    price: unitPrice + toppingsTotal, 
-    quantity: qty,
-    toppings: toppingsArr,
-    status: "Pending",
-  };
-});
+    return {
+      table,
+      name: item.name,
+      price: unitPrice + toppingsTotal,
+      quantity: qty,
+      toppings: toppingsArr,
+      status: "Pending",
+    };
+  });
 
 
   try {
@@ -312,45 +312,45 @@ const fetchToppingsByProduct = (_productId: string) => {
   return new Promise((resolve) => {
     const toppings = [
       {
-      id: "topping-1",
-      name: "Thêm rong biển lá",
-      price: "5,000",
-    },
-    {
-      id: "topping-2",
-      name: "Thêm thịt xá xíu",
-      price: "15,000",
-    },
-    {
-      id: "topping-3",
-      name: "Thêm rau",
-      price: "5,000",
-    },
-    {
-      id: "topping-4",
-      name: "Thêm 1/2 trứng",
-      price: "5,000",
-    },
-    {
-      id: "topping-5",
-      name: "Thêm mì",
-      price: "5,000",
-    },
-    {
-      id: "topping-6",
-      name: "Thêm Phomai lát",
-      price: "10,000",
-    },
-    {
-      id: "topping-7",
-      name: "Không hành",
-      price: "0",
-    },
-    {
-      id: "topping-8",
-      name: "Thêm cay",
-      price: "0",
-    },
+        id: "topping-1",
+        name: "Thêm rong biển lá",
+        price: "5,000",
+      },
+      {
+        id: "topping-2",
+        name: "Thêm thịt xá xíu",
+        price: "15,000",
+      },
+      {
+        id: "topping-3",
+        name: "Thêm rau",
+        price: "5,000",
+      },
+      {
+        id: "topping-4",
+        name: "Thêm 1/2 trứng",
+        price: "5,000",
+      },
+      {
+        id: "topping-5",
+        name: "Thêm mì",
+        price: "5,000",
+      },
+      {
+        id: "topping-6",
+        name: "Thêm Phomai lát",
+        price: "10,000",
+      },
+      {
+        id: "topping-7",
+        name: "Không hành",
+        price: "0",
+      },
+      {
+        id: "topping-8",
+        name: "Thêm cay",
+        price: "0",
+      },
     ];
     resolve(toppings);
   });
@@ -359,11 +359,11 @@ const fetchToppingsByProduct = (_productId: string) => {
 const fetchToppingsForRice = (_productId: string) => {
   return new Promise((resolve) => {
     const toppings = [
-    {
-      id: "topping-1",
-      name: "Thêm cơm",
-      price: "5,000 ₫",
-    },
+      {
+        id: "topping-1",
+        name: "Thêm cơm",
+        price: "5,000 ₫",
+      },
     ];
     resolve(toppings);
   });
@@ -372,7 +372,7 @@ const fetchToppingsForRice = (_productId: string) => {
 
 
 function App() {
-    // Check table parameter on mount
+  // Check table parameter on mount
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const table = params.get("table");
@@ -388,47 +388,45 @@ function App() {
   const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
   const [isFloatingCartVisible, setIsFloatingCartVisible] = useState(true);
   // inside App component
-const [productQuantity, setProductQuantity] = useState(1);
-    const getLineTotal = (item: any) => {
-  const basePrice = Number(item.price.replace(/\D/g, ""));
-  const toppingsTotal = item.toppings
-    ? item.toppings.reduce(
+  const [productQuantity, setProductQuantity] = useState(1);
+  const getLineTotal = (item: any) => {
+    const basePrice = Number(item.price.replace(/\D/g, ""));
+    const toppingsTotal = item.toppings
+      ? item.toppings.reduce(
         (sum: number, t: any) => sum + Number(t.price.replace(/\D/g, "")) * (t.quantity || 0),
         0
       )
-    : 0;
-  return (basePrice + toppingsTotal) * (item.quantity || 1);
-};
+      : 0;
+    return (basePrice + toppingsTotal) * (item.quantity || 1);
+  };
 
-// Inside your App component
-const totalItemsInCart = cart.reduce((acc, item) => acc + (item.quantity || 1), 0);
-
-
-const parsePrice = (price: string | number | undefined): number => {
-  if (!price) return 0;
-  if (typeof price === "number") return price;
-  // Remove anything that’s not a digit or dot
-  const numeric = price.replace(/[^\d.]/g, "");
-  return Number(numeric) || 0;
-};
-
-type Topping = { price?: string | number; quantity?: number };
-type CartItem = { price?: string | number; quantity?: number; toppings?: Topping[] };
-
-const getItemLineTotal = (item: CartItem): number => {
-  if (!item) return 0;
-  const unitPrice = parsePrice(item.price);
-
-  const toppingsTotal = (item.toppings || []).reduce((sum, t) => {
-    const toppingPrice = parsePrice(t.price);
-    const toppingQty = Number(t.quantity) || 1;
-    return sum + toppingPrice * toppingQty;
-  }, 0);
-
-  return (unitPrice + toppingsTotal);
-};
+  // Inside your App component
+  const totalItemsInCart = cart.reduce((acc, item) => acc + (item.quantity || 1), 0);
 
 
+  const parsePrice = (price: string | number | undefined): number => {
+    if (!price) return 0;
+    if (typeof price === "number") return price;
+    // Remove anything that’s not a digit or dot
+    const numeric = price.replace(/[^\d.]/g, "");
+    return Number(numeric) || 0;
+  };
+
+  type Topping = { price?: string | number; quantity?: number };
+  type CartItem = { price?: string | number; quantity?: number; toppings?: Topping[] };
+
+  const getItemLineTotal = (item: CartItem): number => {
+    if (!item) return 0;
+    const unitPrice = parsePrice(item.price);
+
+    const toppingsTotal = (item.toppings || []).reduce((sum, t) => {
+      const toppingPrice = parsePrice(t.price);
+      const toppingQty = Number(t.quantity) || 1;
+      return sum + toppingPrice * toppingQty;
+    }, 0);
+
+    return (unitPrice + toppingsTotal);
+  };
 
 
 
@@ -436,36 +434,38 @@ const getItemLineTotal = (item: CartItem): number => {
 
 
 
-const addToCartWithToppings = (product: any, toppings: any[] = [], productQuantity: number = 1) => {
-  const selectedToppings = toppings
-    .filter(t => t.quantity > 0)
-    .map(t => ({ ...t }));
 
-  setCart(prev => {
-    const normalize = (toppings: any[]) =>
-      (toppings || [])
-        .map(t => ({ id: t.id, quantity: t.quantity || 0 }))
-        .sort((a, b) => a.id.localeCompare(b.id));
 
-    const existingIndex = prev.findIndex(
-      item =>
-        item.id === product.id &&
-        JSON.stringify(normalize(item.toppings)) ===
-        JSON.stringify(normalize(selectedToppings))
-    );
+  const addToCartWithToppings = (product: any, toppings: any[] = [], productQuantity: number = 1) => {
+    const selectedToppings = toppings
+      .filter(t => t.quantity > 0)
+      .map(t => ({ ...t }));
 
-    if (existingIndex !== -1) {
-      const updated = [...prev];
-      updated[existingIndex] = {
-        ...updated[existingIndex],
-        quantity: (updated[existingIndex].quantity || 0) + productQuantity
-      };
-      return updated;
-    }
+    setCart(prev => {
+      const normalize = (toppings: any[]) =>
+        (toppings || [])
+          .map(t => ({ id: t.id, quantity: t.quantity || 0 }))
+          .sort((a, b) => a.id.localeCompare(b.id));
 
-    return [...prev, { ...product, quantity: productQuantity, toppings: selectedToppings }];
-  });
-};
+      const existingIndex = prev.findIndex(
+        item =>
+          item.id === product.id &&
+          JSON.stringify(normalize(item.toppings)) ===
+          JSON.stringify(normalize(selectedToppings))
+      );
+
+      if (existingIndex !== -1) {
+        const updated = [...prev];
+        updated[existingIndex] = {
+          ...updated[existingIndex],
+          quantity: (updated[existingIndex].quantity || 0) + productQuantity
+        };
+        return updated;
+      }
+
+      return [...prev, { ...product, quantity: productQuantity, toppings: selectedToppings }];
+    });
+  };
 
 
 
@@ -474,35 +474,35 @@ const addToCartWithToppings = (product: any, toppings: any[] = [], productQuanti
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [toppings, setToppings] = useState<any[]>([]);
 
-const addToCart = (product: any) => {
-  setCart((prev) => {
-    const existingIndex = prev.findIndex(item => item.id === product.id && (!item.toppings || item.toppings.length === 0));
-    if (existingIndex !== -1) {
-      const updated = [...prev];
-      updated[existingIndex] = {
-        ...updated[existingIndex],
-        quantity: (updated[existingIndex].quantity || 1) + 1
-      };
-      return updated;
+  const addToCart = (product: any) => {
+    setCart((prev) => {
+      const existingIndex = prev.findIndex(item => item.id === product.id && (!item.toppings || item.toppings.length === 0));
+      if (existingIndex !== -1) {
+        const updated = [...prev];
+        updated[existingIndex] = {
+          ...updated[existingIndex],
+          quantity: (updated[existingIndex].quantity || 1) + 1
+        };
+        return updated;
+      }
+      return [...prev, { ...product, quantity: 1 }];
+    });
+  };
+
+
+  useEffect(() => {
+    setLoading(true);
+    fetchProductsByCategory(activeSection).then((items: any) => {
+      setMenuItems(items);
+      setLoading(false);
+    });
+  }, [activeSection]);
+  // Reset quantity when opening detail modal
+  useEffect(() => {
+    if (isDetailModalOpen) {
+      setProductQuantity(1);
     }
-    return [...prev, { ...product, quantity: 1 }];
-  });
-};
-
-
-useEffect(() => {
-  setLoading(true);
-  fetchProductsByCategory(activeSection).then((items: any) => {
-    setMenuItems(items);
-    setLoading(false);
-  });
-}, [activeSection]);
-// Reset quantity when opening detail modal
-useEffect(() => {
-  if (isDetailModalOpen) {
-    setProductQuantity(1);
-  }
-}, [isDetailModalOpen]);
+  }, [isDetailModalOpen]);
 
   // Load toppings dynamically depending on category
   useEffect(() => {
@@ -566,61 +566,61 @@ useEffect(() => {
           ))}
         </aside>
 
-{/* Main Content */}
-<main className="w-3/4 flex-1 p-6 overflow-y-auto">
-  {loading ? null : (
-    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-      {menuItems.map((item) => {
-        // Compute total quantity in cart for this item
-        const itemQuantity = cart
-          .filter(ci => ci.id === item.id)
-          .reduce((sum, ci) => sum + (ci.quantity || 1), 0);
+        {/* Main Content */}
+        <main className="w-3/4 flex-1 p-6 overflow-y-auto">
+          {loading ? null : (
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {menuItems.map((item) => {
+                // Compute total quantity in cart for this item
+                const itemQuantity = cart
+                  .filter(ci => ci.id === item.id)
+                  .reduce((sum, ci) => sum + (ci.quantity || 1), 0);
 
-        return (
-          <div
-            key={item.id}
-            onClick={() => {
-              setSelectedProduct(item);
-              setIsDetailModalOpen(true);
-            }}
-            className="bg-white rounded-2xl shadow-lg overflow-hidden transform hover:scale-105 transition duration-300 relative cursor-pointer"
-          >
-            {/* Image wrapper */}
-            <div className="relative">
-              <img
-                src={item.image}
-                alt={item.name}
-                className="w-full h-48 object-cover"
-              />
+                return (
+                  <div
+                    key={item.id}
+                    onClick={() => {
+                      setSelectedProduct(item);
+                      setIsDetailModalOpen(true);
+                    }}
+                    className="bg-white rounded-2xl shadow-lg overflow-hidden transform hover:scale-105 transition duration-300 relative cursor-pointer"
+                  >
+                    {/* Image wrapper */}
+                    <div className="relative">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-full h-48 object-cover"
+                      />
 
-              {/* Add to Cart button (stops click bubbling) */}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (activeSection === "Noodles" || activeSection === "Rice") {
-                    setSelectedProduct(item);
-                    setIsDetailModalOpen(true);
-                  } else {
-                    addToCart(item);
-                  }
-                }}
-                className="absolute bottom-2 right-2 bg-black text-white w-10 h-10 flex items-center justify-center rounded-full hover:bg-red-700 transition border-white border-4"
-              >
-                {itemQuantity > 0 ? itemQuantity : "+"}
-              </button>
+                      {/* Add to Cart button (stops click bubbling) */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (activeSection === "Noodles" || activeSection === "Rice") {
+                            setSelectedProduct(item);
+                            setIsDetailModalOpen(true);
+                          } else {
+                            addToCart(item);
+                          }
+                        }}
+                        className="absolute bottom-2 right-2 bg-black text-white w-10 h-10 flex items-center justify-center rounded-full hover:bg-red-700 transition border-white border-4"
+                      >
+                        {itemQuantity > 0 ? itemQuantity : "+"}
+                      </button>
+                    </div>
+
+                    {/* Info */}
+                    <div className="p-5">
+                      <h3 className="font-semibold text-gray-800">{item.name}</h3>
+                      <div className="text-black font-bold">{item.price} đ</div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-
-            {/* Info */}
-            <div className="p-5">
-              <h3 className="font-semibold text-gray-800">{item.name}</h3>
-              <div className="text-black font-bold">{item.price} đ</div>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  )}
-</main>
+          )}
+        </main>
 
 
         {/* === Product Detail Modal === */}
@@ -637,25 +637,25 @@ useEffect(() => {
               <p className="text-gray-600 mb-4 text-sm sm:text-base whitespace-pre-line">
                 {selectedProduct.description}
               </p>
-<div className="flex justify-between items-center mb-4 text-sm sm:text-base">
-  <span className="font-semibold">{selectedProduct.price}</span>
-  
-  <div className="flex items-center gap-2">
-    <button
-      onClick={() => setProductQuantity((q) => Math.max(1, q - 1))}
-      className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
-    >
-      -
-    </button>
-    <span className="min-w-[24px] text-center">{productQuantity}</span>
-    <button
-      onClick={() => setProductQuantity((q) => q + 1)}
-      className="px-3 py-1 bg-black text-white rounded hover:bg-red-700"
-    >
-      +
-    </button>
-  </div>
-</div>
+              <div className="flex justify-between items-center mb-4 text-sm sm:text-base">
+                <span className="font-semibold">{selectedProduct.price}</span>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setProductQuantity((q) => Math.max(1, q - 1))}
+                    className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                  >
+                    -
+                  </button>
+                  <span className="min-w-[24px] text-center">{productQuantity}</span>
+                  <button
+                    onClick={() => setProductQuantity((q) => q + 1)}
+                    className="px-3 py-1 bg-black text-white rounded hover:bg-red-700"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
 
               {/* Quantity Selector */}
 
@@ -751,7 +751,6 @@ useEffect(() => {
                 <path d="M2 3.825C2 3.36781 2.37471 3 2.84046 3H4.43383C5.20426 3 5.88713 3.44 6.2058 4.1H20.5987C21.5197 4.1 22.1921 4.95938 21.9504 5.8325L20.5146 11.0678C20.217 12.1472 19.2189 12.9 18.0808 12.9H7.97778L8.16688 13.8797C8.24392 14.2681 8.59061 14.55 8.99333 14.55H19.0894C19.5551 14.55 19.9298 14.9178 19.9298 15.375C19.9298 15.8322 19.5551 16.2 19.0894 16.2H8.99333C7.78167 16.2 6.7416 15.3544 6.51748 14.1891L4.71049 4.87344C4.68597 4.74281 4.57041 4.65 4.43383 4.65H2.84046C2.37471 4.65 2 4.28219 2 3.825ZM6.48246 18.95C6.48246 18.7333 6.52593 18.5188 6.61041 18.3186C6.69488 18.1184 6.8187 17.9365 6.97479 17.7833C7.13087 17.6301 7.31618 17.5085 7.52012 17.4256C7.72406 17.3427 7.94264 17.3 8.16338 17.3C8.38412 17.3 8.6027 17.3427 8.80664 17.4256C9.01058 17.5085 9.19588 17.6301 9.35197 17.7833C9.50806 17.9365 9.63187 18.1184 9.71635 18.3186C9.80082 18.5188 9.8443 18.7333 9.8443 18.95C9.8443 19.1667 9.80082 19.3812 9.71635 19.5814C9.63187 19.7816 9.50806 19.9635 9.35197 20.1167C9.19588 20.2699 9.01058 20.3915 8.80664 20.4744C8.6027 20.5573 8.38412 20.6 8.16338 20.6C7.94264 20.6 7.72406 20.5573 7.52012 20.4744C7.31618 20.3915 7.13087 20.2699 6.97479 20.1167C6.8187 19.9635 6.69488 19.7816 6.61041 19.5814C6.52593 19.3812 6.48246 19.1667 6.48246 18.95ZM18.2489 17.3C18.6947 17.3 19.1223 17.4738 19.4375 17.7833C19.7527 18.0927 19.9298 18.5124 19.9298 18.95C19.9298 19.3876 19.7527 19.8073 19.4375 20.1167C19.1223 20.4262 18.6947 20.6 18.2489 20.6C17.8031 20.6 17.3755 20.4262 17.0603 20.1167C16.7451 19.8073 16.568 19.3876 16.568 18.95C16.568 18.5124 16.7451 18.0927 17.0603 17.7833C17.3755 17.4738 17.8031 17.3 18.2489 17.3Z" fill="currentColor"></path>
               </svg>
               Số món trong giỏ</h2>
-
             {cart.length === 0 ? (
               <p className="text-gray-500">Chưa có sản phẩm trong giỏ.</p>
             ) : (
@@ -770,7 +769,45 @@ useEffect(() => {
 
                       <div className="flex-1">
                         <h3 className="font-semibold text-gray-800">{item.name}</h3>
-                        <p className="text-gray-500">x {item.quantity || 1}</p>
+
+                        {/* Quantity controls */}
+                        <div className="flex items-center gap-2 mt-1">
+                          {/* Decrease quantity */}
+                          <button
+                            onClick={() => {
+                              setCart(prev =>
+                                prev
+                                  .map((ci, i) =>
+                                    i === index
+                                      ? { ...ci, quantity: (ci.quantity || 1) - 1 } // new object
+                                      : ci
+                                  )
+                                  .filter(ci => (ci.quantity || 0) > 0) // remove if quantity <= 0
+                              );
+                            }}
+                            className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                          >
+                            -
+                          </button>
+
+                          <span className="min-w-[24px] text-center">{item.quantity}</span>
+
+                          {/* Increase quantity */}
+                          <button
+                            onClick={() => {
+                              setCart(prev =>
+                                prev.map((ci, i) =>
+                                  i === index
+                                    ? { ...ci, quantity: (ci.quantity || 1) + 1 } // new object
+                                    : ci
+                                )
+                              );
+                            }}
+                            className="px-2 py-1 bg-black text-white rounded hover:bg-red-700"
+                          >
+                            +
+                          </button>
+                        </div>
 
                         {/* Toppings */}
                         {item.toppings && item.toppings.length > 0 && (
@@ -784,15 +821,33 @@ useEffect(() => {
                         )}
                       </div>
 
-<div className="text-black font-bold">
-  {getItemLineTotal(item)?.toLocaleString() ?? "0"} đ
-</div>
-
+                      {/* Line total */}
+                      <div className="text-black font-bold">
+                        {getItemLineTotal(item)?.toLocaleString() ?? "0"} đ
+                      </div>
                     </div>
                   </li>
                 ))}
-              </ul>
 
+
+              </ul>
+            )}
+            {/* Back to Menu button */}
+            {cart.length === 0 && (
+
+              <div className="mt-6 pt-4 flex flex-col gap-3">
+                <div className="flex justify-end gap-3">
+                  <button
+                    className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                    onClick={() => {
+                      setIsCartOpen(false);
+                      setIsFloatingCartVisible(true);
+                    }}
+                  >
+                    ← Quay lại menu
+                  </button>
+                </div>
+              </div>
             )}
 
             {/* Summary */}
@@ -802,7 +857,7 @@ useEffect(() => {
                   <span>Tổng ({cart.reduce((acc, item) => acc + (item.quantity || 1), 0)} Items)</span>
                   <span className="text-black font-bold">
                     {cart.reduce((acc, item) => {
-                  const total = acc + getLineTotal(item);
+                      const total = acc + getLineTotal(item);
                       return total;
                     }, 0).toLocaleString()} đ
 
