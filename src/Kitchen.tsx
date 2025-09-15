@@ -82,7 +82,7 @@ function Kitchen() {
     const username = localStorage.getItem("username");
     const password = localStorage.getItem("password");
 
-    if (username != 'nhanvien' && password != 'mamaramen321') {
+    if ((username != 'nhanvien' && password != 'mamaramen321') || (username != 'admin' && password != 'reportforadmin321')) {
       // If credentials not found, redirect to login
       navigate("/login", { replace: true });
     }
