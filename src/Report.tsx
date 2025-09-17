@@ -38,7 +38,7 @@ function Report() {
   const formattedYear = today.getFullYear().toString();
 
   const [products, setProducts] = useState<Product[]>([]);
-  const [totalOrders, setTotalOrders] = useState<number>(0);
+  // const [totalOrders, setTotalOrders] = useState<number>(0);
   const [loading, setLoading] = useState(true);
 
   // Report type: "day" | "month" | "year"
