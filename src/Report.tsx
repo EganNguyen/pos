@@ -100,7 +100,7 @@ function Report() {
           price: p.price,
         }));
         setProducts(mappedProducts);
-        setTotalOrders(data.total_order);
+        // setTotalOrders(data.total_order);
       } else {
         // Orders view
         const mappedOrders: Order[] = data.orders.map((o: any) => ({
@@ -108,7 +108,7 @@ function Report() {
           products: o.products,
         }));
         setOrders(mappedOrders);
-        setTotalOrders(mappedOrders.length);
+        // setTotalOrders(mappedOrders.length);
       }
     } catch (error) {
       console.error("Error fetching products:", error);
