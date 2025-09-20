@@ -40,6 +40,7 @@ const HARD_CODED_TABLES = [
   "Mang về 2",
 ];
 
+
 // Fetch kitchen data (initial load)
 const fetchKitchenData = async () => {
   try {
@@ -72,6 +73,28 @@ const fetchKitchenData = async () => {
 
 
 function Kitchen() {
+
+  const [processingOrders, setProcessingOrders] = useState<Set<number>>(new Set());
+
+const playNotificationSound = () => {
+  const audio = new Audio("/ding.mp3"); // put ding.mp3 inside /public
+  audio.play().catch((err) => {
+    console.warn("Sound blocked until user interacts:", err);
+  });
+};
+
+useEffect(() => {
+  const unlockAudio = () => {
+    const a = new Audio("/ding.mp3");
+    a.play().catch(() => {});
+    document.removeEventListener("click", unlockAudio);
+  };
+  document.addEventListener("click", unlockAudio);
+}, []);
+
+
+
+
   const navigate = useNavigate();
   const [tables, setTables] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
@@ -137,6 +160,9 @@ function Kitchen() {
   };
 
   const handleCancelOrder = async (productId: number) => {
+    if (processingOrders.has(productId)) return; // tránh double click
+
+    setProcessingOrders((prev) => new Set(prev).add(productId));
     try {
       const response = await fetch(`${SUPABASE_URL}/functions/v1/cancel-order`, {
         method: "POST",
@@ -145,16 +171,12 @@ function Kitchen() {
       });
 
       if (!response.ok) throw new Error(`Failed to cancel order: ${response.status}`);
-
       const result = await response.json();
-      if (!result.success) {
-        console.error("Cancel API error:", result.message);
-      } else {
-        console.log("Order cancelled:", productId);
-        // Supabase Realtime will update the UI automatically
-      }
+      if (!result.success) console.error("Cancel API error:", result.message);
     } catch (err) {
       console.error("Error cancelling order:", err);
+    } finally {
+      // không cần bỏ khỏi processingOrders vì realtime sẽ xoá order khỏi UI
     }
   };
 
@@ -224,6 +246,7 @@ function Kitchen() {
           console.log("Realtime order event:", payload);
 
           if (payload.eventType === "INSERT") {
+            playNotificationSound();
             const newOrder: Order = {
               ...(payload.new as Order), // cast payload.new to Order
               toppings: Array.isArray(payload.new.toppings)
@@ -306,26 +329,19 @@ function Kitchen() {
 
   // Handle status change manually
   const handleStatusChange = async (productId: number) => {
+    if (processingOrders.has(productId)) return;
+
+    setProcessingOrders((prev) => new Set(prev).add(productId));
     try {
-      const response = await fetch(
-        `${SUPABASE_URL}/functions/v1/complete-order`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ order_id: productId }),
-        }
-      );
+      const response = await fetch(`${SUPABASE_URL}/functions/v1/complete-order`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ order_id: productId }),
+      });
 
-      if (!response.ok) {
-        throw new Error(`Failed to update status: ${response.status}`);
-      }
-
+      if (!response.ok) throw new Error(`Failed to update status: ${response.status}`);
       const result = await response.json();
-
-      if (!result.success) {
-        console.error("API error:", result.message);
-      }
-      // ✅ Realtime will push update, so no local update needed
+      if (!result.success) console.error("API error:", result.message);
     } catch (err) {
       console.error("Error updating order:", err);
     }
@@ -451,22 +467,33 @@ function Kitchen() {
                             {product.status}
                           </td>
                           <td className="px-2 py-1 text-xs md:text-sm">
-                            {product.status === "Pending" && (
-                              <div className="flex space-x-1">
-                                <button
-                                  className="px-2 py-1 text-xs md:text-sm bg-red-600 text-white rounded hover:bg-red-700"
-                                  onClick={() => handleCancelOrder(product.id)}
-                                >
-                                  Hủy
-                                </button>
-                                <button
-                                  className="px-2 py-1 text-xs md:text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
-                                  onClick={() => handleStatusChange(product.id)}
-                                >
-                                  Hoàn tất
-                                </button>
-                              </div>
-                            )}
+{product.status === "Pending" && (
+  <div className="flex space-x-1">
+    <button
+      className={`px-2 py-1 text-xs md:text-sm rounded text-white ${
+        processingOrders.has(product.id)
+          ? "bg-gray-400 cursor-not-allowed"
+          : "bg-red-600 hover:bg-red-700"
+      }`}
+      onClick={() => handleCancelOrder(product.id)}
+      disabled={processingOrders.has(product.id)}
+    >
+      Hủy
+    </button>
+    <button
+      className={`px-2 py-1 text-xs md:text-sm rounded text-white ${
+        processingOrders.has(product.id)
+          ? "bg-gray-400 cursor-not-allowed"
+          : "bg-blue-600 hover:bg-blue-700"
+      }`}
+      onClick={() => handleStatusChange(product.id)}
+      disabled={processingOrders.has(product.id)}
+    >
+      Hoàn tất
+    </button>
+  </div>
+)}
+
 
 
                             {product.status === "Completed" && (
