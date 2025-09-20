@@ -81,13 +81,13 @@ function Cashier() {
   const [selectedTables, setSelectedTables] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    const username = localStorage.getItem("username");
-    const password = localStorage.getItem("password");
+    const cashier = localStorage.getItem("username");
+    const cashierpassword = localStorage.getItem("password");
     const admin = localStorage.getItem("admin");
     const adminpassword = localStorage.getItem("adminpassword");
 
     if (!(
-      (username === 'cashier' && password === 'ramenabc147') ||
+      (cashier === 'cashier' && cashierpassword === 'ramenabc147') ||
       (admin === 'admin' && adminpassword === 'reportforadmin321')
     )) {
       navigate("/login", { replace: true });
