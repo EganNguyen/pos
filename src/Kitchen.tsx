@@ -72,22 +72,25 @@ const fetchKitchenData = async () => {
 
 
 function Kitchen() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const [tables, setTables] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTables, setSelectedTables] = useState<Record<string, string>>({});
 
-      useEffect(() => {
+  useEffect(() => {
     const username = localStorage.getItem("username");
     const password = localStorage.getItem("password");
     const admin = localStorage.getItem("admin");
     const adminpassword = localStorage.getItem("adminpassword");
 
-    if ((username != 'nhanvien' && password != 'mamaramen321') || (admin != 'admin' && adminpassword != 'reportforadmin321')) {
-      // If credentials not found, redirect to login
+    if (!(
+      (username === 'nhanvien' && password === 'mamaramen321') ||
+      (admin === 'admin' && adminpassword === 'reportforadmin321')
+    )) {
       navigate("/login", { replace: true });
     }
+
   }, [navigate]);
 
 
@@ -416,26 +419,26 @@ function Kitchen() {
                       .map((product) => (
                         <tr key={product.id}>
                           <td className="px-2 py-1 text-gray-800 font-bold text-sm md:text-base">
-  {product.name}{" "}
-  {product.quantity > 1 && (
-    <span className="ml-1 bg-indigo-100 text-indigo-800 text-xs px-1 rounded">
-      x{product.quantity}
-    </span>
-  )}
-</td>
+                            {product.name}{" "}
+                            {product.quantity > 1 && (
+                              <span className="ml-1 bg-indigo-100 text-indigo-800 text-xs px-1 rounded">
+                                x{product.quantity}
+                              </span>
+                            )}
+                          </td>
 
-     <td className="px-2 py-1 text-gray-700 text-sm md:text-base flex flex-wrap gap-1">
-  {Array.isArray(product.toppings) && product.toppings.length > 0
-    ? product.toppings.map((t: any, i: number) => (
-        <span
-          key={i}
-          className="bg-yellow-100 text-yellow-800 text-xs md:text-sm px-2 py-0.5 rounded-full"
-        >
-          {typeof t === "string" ? t : `${t.name} (x${t.quantity || 1})`}
-        </span>
-      ))
-    : "-"}
-</td>
+                          <td className="px-2 py-1 text-gray-700 text-sm md:text-base flex flex-wrap gap-1">
+                            {Array.isArray(product.toppings) && product.toppings.length > 0
+                              ? product.toppings.map((t: any, i: number) => (
+                                <span
+                                  key={i}
+                                  className="bg-yellow-100 text-yellow-800 text-xs md:text-sm px-2 py-0.5 rounded-full"
+                                >
+                                  {typeof t === "string" ? t : `${t.name} (x${t.quantity || 1})`}
+                                </span>
+                              ))
+                              : "-"}
+                          </td>
 
                           <td
                             className={`px-2 py-1 font-semibold text-xs md:text-sm ${product.status === "Cooking"
@@ -515,8 +518,8 @@ function Kitchen() {
 
                     <button
                       className={`py-2 px-4 rounded text-white ${selectedTables[`payment-${table.id}`]?.trim()
-                          ? "bg-green-600 hover:bg-green-700"
-                          : "bg-gray-400 cursor-not-allowed"
+                        ? "bg-green-600 hover:bg-green-700"
+                        : "bg-gray-400 cursor-not-allowed"
                         }`}
                       disabled={!selectedTables[`payment-${table.id}`]?.trim()}
                       onClick={() =>
