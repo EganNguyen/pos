@@ -33,6 +33,18 @@ const LoginPage: React.FC = () => {
       setError("Invalid username or password");
     }
   };
+      if (username === "cashier" && password === "ramenabc147") {
+      // Save credentials to localStorage
+      localStorage.setItem("cashier", username);
+      localStorage.setItem("cashierpassword", password);
+
+      setError("");
+      // Redirect to report page
+      navigate("/billing");
+    } else {
+      setError("Invalid username or password");
+    }
+  };
 
   
 
