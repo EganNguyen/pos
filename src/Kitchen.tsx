@@ -12,7 +12,7 @@
 // Enable choosing payment method (cash, tranfer) when processing payment. - to do
 
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef  } from "react";
 import { createClient } from "@supabase/supabase-js";
 import "./App.css";
 
@@ -76,21 +76,40 @@ function Kitchen() {
 
   const [processingOrders, setProcessingOrders] = useState<Set<number>>(new Set());
 
-const playNotificationSound = () => {
-  const audio = new Audio("/ding.mp3"); // put ding.mp3 inside /public
-  audio.play().catch((err) => {
-    console.warn("Sound blocked until user interacts:", err);
-  });
-};
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-useEffect(() => {
-  const unlockAudio = () => {
-    const a = new Audio("/ding.mp3");
-    a.play().catch(() => {});
-    document.removeEventListener("click", unlockAudio);
+  useEffect(() => {
+    // Prepare audio object
+    audioRef.current = new Audio("/ding.mp3");
+
+    // Unlock audio after first user gesture
+    const unlockAudio = () => {
+      if (audioRef.current) {
+        audioRef.current.play().catch(() => {}); // play once (may be muted)
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+      document.removeEventListener("click", unlockAudio);
+      document.removeEventListener("touchstart", unlockAudio);
+    };
+
+    document.addEventListener("click", unlockAudio);
+    document.addEventListener("touchstart", unlockAudio);
+
+    return () => {
+      document.removeEventListener("click", unlockAudio);
+      document.removeEventListener("touchstart", unlockAudio);
+    };
+  }, []);
+
+  const playNotificationSound = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0; // rewind
+      audioRef.current.play().catch((err) => {
+        console.warn("Sound blocked:", err);
+      });
+    }
   };
-  document.addEventListener("click", unlockAudio);
-}, []);
 
 
 
