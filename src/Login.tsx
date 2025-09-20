@@ -29,10 +29,11 @@ const LoginPage: React.FC = () => {
       setError("");
       // Redirect to report page
       navigate("/kitchen");
-    } else {
+    } 
+    else {
       setError("Invalid username or password");
     }
-  };
+
       if (username === "cashier" && password === "ramenabc147") {
       // Save credentials to localStorage
       localStorage.setItem("cashier", username);
