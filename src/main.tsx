@@ -8,6 +8,7 @@ import "./index.css";
 import Kitchen from "./Kitchen";
 import ErrorPage from "./Error";
 import LoginPage from "./Login";
+import Cashier from "./Billing";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -18,6 +19,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <Route path="/kitchen" element={<Kitchen />} />
         <Route path="/error" element={<ErrorPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/billing" element={<Cashier />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
