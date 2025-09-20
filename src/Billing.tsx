@@ -81,8 +81,8 @@ function Cashier() {
   const [selectedTables, setSelectedTables] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    const cashier = localStorage.getItem("username");
-    const cashierpassword = localStorage.getItem("password");
+    const cashier = localStorage.getItem("cashier");
+    const cashierpassword = localStorage.getItem("cashierpassword");
     const admin = localStorage.getItem("admin");
     const adminpassword = localStorage.getItem("adminpassword");
 
