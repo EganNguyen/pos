@@ -441,10 +441,10 @@ function Kitchen() {
                         Topping
                       </th>
                       <th className="px-2 py-1 text-left text-xs md:text-sm font-medium text-gray-500">
-                        Trạng thái
+                      
                       </th>
                       <th className="px-2 py-1 text-left text-xs md:text-sm font-medium text-gray-500">
-                        Hành động
+                   
                       </th>
                     </tr>
                   </thead>
@@ -475,16 +475,6 @@ function Kitchen() {
                               : "-"}
                           </td>
 
-                          <td
-                            className={`px-2 py-1 font-semibold text-xs md:text-sm ${product.status === "Cooking"
-                              ? "text-green-600"
-                              : product.status === "Completed"
-                                ? "text-gray-400"
-                                : "text-yellow-600"
-                              }`}
-                          >
-                            {product.status}
-                          </td>
                           <td className="px-2 py-1 text-xs md:text-sm">
 {product.status === "Pending" && (
   <div className="flex space-x-1">
@@ -499,6 +489,21 @@ function Kitchen() {
     >
       Hủy
     </button>
+  </div>
+)}
+
+                            {product.status === "Completed" && (
+                              <button
+                                className="px-2 py-1 text-xs md:text-sm bg-gray-400 text-white rounded cursor-not-allowed"
+                                disabled
+                              >
+                                Đã hoàn tất
+                              </button>
+                            )}
+                          </td>
+                          <td className="px-2 py-1 text-xs md:text-sm">
+{product.status === "Pending" && (
+  <div className="flex space-x-1">
     <button
       className={`px-2 py-1 text-xs md:text-sm rounded text-white ${
         processingOrders.has(product.id)
