@@ -1,4 +1,4 @@
-// 1. Categories & Products
+// 1. Categories and Products
 
 // Display menu items grouped into categories (e.g., Mì Ramen/Udon, Cơm, Món Đặc Biệt, Món ăn kèm, Đồ uống, Tráng miệng).
 
