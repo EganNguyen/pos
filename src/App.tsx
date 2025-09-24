@@ -227,6 +227,29 @@ const productsByCategory: Record<string, any[]> = {
   ],
 };
 
+const saveOrderToLocalStorage = (cart: any[]) => {
+  const orders = JSON.parse(localStorage.getItem("orders") || "[]");
+
+  const newOrder = {
+    items: cart,
+    total: cart.reduce((acc, item) => {
+      const lineTotal = (parseInt(item.price.replace(/\D/g, "")) || 0) * (item.quantity || 1);
+      return acc + lineTotal;
+    }, 0),
+    createdAt: new Date().toISOString(),
+  };
+
+  orders.push(newOrder);
+  localStorage.setItem("orders", JSON.stringify(orders));
+};
+
+const getLastOrder = () => {
+  const orders = JSON.parse(localStorage.getItem("orders") || "[]");
+  return orders.length > 0 ? orders[orders.length - 1] : null;
+};
+
+
+
 
 // Fake API function
 const fetchProductsByCategory = (category: string) => {
@@ -297,6 +320,8 @@ const completeOrderApi = async (cart: any[]) => {
 
     const data = await response.json();
     console.log("Create order success:", data);
+
+    
     return true;
   } catch (error) {
     console.error("Create order API error:", error);
@@ -380,6 +405,16 @@ function App() {
       window.location.href = "/error";
     }
   }, []);
+
+useEffect(() => {
+  const storedOrders = JSON.parse(localStorage.getItem("orders") || "[]");
+  if (storedOrders.length > 0) {
+    setLastOrder(storedOrders[storedOrders.length - 1]);
+  }
+}, []);
+
+
+
   const [activeSection, setActiveSection] = useState(categories[0].key);
   const [menuItems, setMenuItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -470,6 +505,7 @@ function App() {
 
 
   // states for detail modal
+  const [lastOrder, setLastOrder] = useState<any | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [toppings, setToppings] = useState<any[]>([]);
@@ -881,6 +917,8 @@ function App() {
 
                       const success = await completeOrderApi(cart);
                       if (success) {
+    saveOrderToLocalStorage(cart);  // ⬅ save latest order locally
+    setLastOrder(getLastOrder());   // refresh state from storage
                         setCart([]);
                         setIsCartOpen(false);
                         setIsCompleteModalOpen(true); // open Complete modal
@@ -900,22 +938,39 @@ function App() {
       )}
 
       {/* ===== Complete Modal ===== */}
-      {isCompleteModalOpen && (
-        <div className="fixed inset-0 bg-white bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-80 max-w-sm shadow-lg text-center">
-            <h2 className="text-3xl font-bold text-green-600 mb-4">Hoàn tất!</h2>
-            <p className="text-gray-700 mb-6">Đơn hàng của bạn đã được đặt thành công.</p>
-            <button
-              className="px-6 py-2 bg-black text-white rounded hover:bg-red-700"
-              onClick={() => setIsCompleteModalOpen(false)}
 
-            >
-              Đóng
-            </button>
-            <div className="mt-4 text-sm text-gray-400">Được vận hành bởi Mama Ramen</div>
+
+{isCompleteModalOpen && lastOrder && (
+  <div className="fixed inset-0 bg-white bg-opacity-40 flex items-center justify-center z-50">
+    <div className="bg-white rounded-xl p-6 w-96 shadow-lg">
+      <h2 className="text-2xl font-bold mb-4">✅ Đặt hàng thành công!</h2>
+      
+      <div className="mb-4">
+        {lastOrder.items.map((item: any, idx: number) => (
+          <div key={idx} className="flex justify-between text-sm">
+            <span>{item.name} × {item.quantity}</span>
+            <span>{getItemLineTotal(item).toLocaleString()} đ</span>
           </div>
-        </div>
-      )}
+        ))}
+      </div>
+
+      <div className="font-bold text-lg text-right">
+        Tổng cộng: {lastOrder.total.toLocaleString()} đ
+      </div>
+
+      <button
+        onClick={() => setIsCompleteModalOpen(false)}
+        className="mt-6 w-full bg-black text-white py-2 rounded-lg hover:bg-red-700"
+      >
+        Đóng
+      </button>
+    </div>
+  </div>
+)}
+
+
+
+
 
       {/* Floating Cart Button */}
       {isFloatingCartVisible && !isCartOpen && (
