@@ -227,19 +227,33 @@ const productsByCategory: Record<string, any[]> = {
   ],
 };
 
-const saveOrderToLocalStorage = (cart: any[]) => {
-  const orders = JSON.parse(localStorage.getItem("orders") || "[]");
+interface Topping {
+  price: string;
+  quantity?: number;
+}
+
+interface CartItem {
+  price: string;
+  quantity?: number;
+  toppings?: Topping[];
+}
+
+const saveOrderToLocalStorage = (cart: CartItem[]) => {
+  const orders: any[] = JSON.parse(localStorage.getItem("orders") || "[]");
 
   const newOrder = {
     items: cart,
-    total: cart.reduce((acc, item) => {
+    total: cart.reduce((acc: number, item: CartItem) => {
       // Calculate base item total
       const itemPrice = (parseInt(item.price.replace(/\D/g, "")) || 0) * (item.quantity || 1);
 
       // Calculate toppings total
-      const toppingsTotal = (item.toppings || []).reduce((tAcc, topping) => {
-        return tAcc + (parseInt(topping.price.replace(/\D/g, "")) || 0) * (topping.quantity || 1);
-      }, 0);
+      const toppingsTotal = (item.toppings || []).reduce(
+        (tAcc: number, topping: Topping) => {
+          return tAcc + (parseInt(topping.price.replace(/\D/g, "")) || 0) * (topping.quantity || 1);
+        },
+        0
+      );
 
       return acc + itemPrice + toppingsTotal;
     }, 0),
@@ -249,6 +263,7 @@ const saveOrderToLocalStorage = (cart: any[]) => {
   orders.push(newOrder);
   localStorage.setItem("orders", JSON.stringify(orders));
 };
+
 
 
 const getLastOrder = () => {

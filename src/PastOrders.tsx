@@ -31,7 +31,7 @@ export default function PastOrders() {
     setOrders(stored)
   }, []);
 
-  if (orders.length === 0) return <p>No past orders yet.</p>;
+  if (orders.length === 0) return <p>Chưa có đơn hàng nào.</p>;
 
   return (
     <div className="space-y-6">
