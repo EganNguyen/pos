@@ -63,7 +63,7 @@
 // Tailwind CSS for styling.
 
 // Custom CSS for extra styles.
-
+import PastOrders from "./PastOrders";
 import { useState, useEffect } from "react";
 import "./App.css";
 
@@ -233,8 +233,15 @@ const saveOrderToLocalStorage = (cart: any[]) => {
   const newOrder = {
     items: cart,
     total: cart.reduce((acc, item) => {
-      const lineTotal = (parseInt(item.price.replace(/\D/g, "")) || 0) * (item.quantity || 1);
-      return acc + lineTotal;
+      // Calculate base item total
+      const itemPrice = (parseInt(item.price.replace(/\D/g, "")) || 0) * (item.quantity || 1);
+
+      // Calculate toppings total
+      const toppingsTotal = (item.toppings || []).reduce((tAcc, topping) => {
+        return tAcc + (parseInt(topping.price.replace(/\D/g, "")) || 0) * (topping.quantity || 1);
+      }, 0);
+
+      return acc + itemPrice + toppingsTotal;
     }, 0),
     createdAt: new Date().toISOString(),
   };
@@ -242,6 +249,7 @@ const saveOrderToLocalStorage = (cart: any[]) => {
   orders.push(newOrder);
   localStorage.setItem("orders", JSON.stringify(orders));
 };
+
 
 const getLastOrder = () => {
   const orders = JSON.parse(localStorage.getItem("orders") || "[]");
@@ -321,7 +329,7 @@ const completeOrderApi = async (cart: any[]) => {
     const data = await response.json();
     console.log("Create order success:", data);
 
-    
+
     return true;
   } catch (error) {
     console.error("Create order API error:", error);
@@ -406,15 +414,15 @@ function App() {
     }
   }, []);
 
-useEffect(() => {
-  const storedOrders = JSON.parse(localStorage.getItem("orders") || "[]");
-  if (storedOrders.length > 0) {
-    setLastOrder(storedOrders[storedOrders.length - 1]);
-  }
-}, []);
+  useEffect(() => {
+    const storedOrders = JSON.parse(localStorage.getItem("orders") || "[]");
+    if (storedOrders.length > 0) {
+      setLastOrder(storedOrders[storedOrders.length - 1]);
+    }
+  }, []);
 
 
-
+  const [isPastOrdersOpen, setIsPastOrdersOpen] = useState(false);
   const [activeSection, setActiveSection] = useState(categories[0].key);
   const [menuItems, setMenuItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -422,6 +430,8 @@ useEffect(() => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
   const [isFloatingCartVisible, setIsFloatingCartVisible] = useState(true);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+
   // inside App component
   const [productQuantity, setProductQuantity] = useState(1);
   const getLineTotal = (item: any) => {
@@ -569,6 +579,13 @@ useEffect(() => {
         {/* Logo */} <div className="flex items-center space-x-3"> <img src="/logo.png" alt="Mama Ramen Logo" className="w-14 h-14 object-contain" /> <h1 className="text-xl font-bold text-gray-900">Mama ramen</h1> </div>
         <div className="flex gap-3 items-center">
           <div className="flex gap-3 items-center">
+
+            <button
+              className="px-4 py-2 bg-black text-white rounded hover:bg-red-700"
+              onClick={() => setIsPastOrdersOpen(true)}
+            >
+              Lịch sử đặt hàng
+            </button>
             <button
               className="p-2 rounded-full hover:bg-red-100 transition relative"
               onClick={() => setIsCartOpen(true)}
@@ -911,25 +928,12 @@ useEffect(() => {
                     Hủy
                   </button>
                   <button
-                    className="px-4 py-2 bg-black text-white rounded hover:bg-red-700"
-                    onClick={async () => {
-                      if (cart.length === 0) return;
-
-                      const success = await completeOrderApi(cart);
-                      if (success) {
-    saveOrderToLocalStorage(cart);  // ⬅ save latest order locally
-    setLastOrder(getLastOrder());   // refresh state from storage
-                        setCart([]);
-                        setIsCartOpen(false);
-                        setIsCompleteModalOpen(true); // open Complete modal
-                        setIsFloatingCartVisible(true);
-                      } else {
-                        alert("Checkout failed! Please try again.");
-                      }
-                    }}
+                    onClick={() => setIsConfirmModalOpen(true)}  // 👈 instead of calling API directly
+                    className="w-full bg-black text-white py-3 rounded-xl font-semibold text-lg shadow-md hover:bg-red-700 transition"
                   >
                     Hoàn tất đơn hàng
                   </button>
+
                 </div>
               </div>
             )}
@@ -937,36 +941,164 @@ useEffect(() => {
         </div>
       )}
 
+      {isPastOrdersOpen && (
+        <div className="fixed inset-0 bg-white bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-96 max-h-[80vh] overflow-y-auto relative shadow-lg">
+            <h2 className="text-xl font-bold mb-4">Lịch sử đơn hàng</h2>
+
+            <PastOrders />
+
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={() => setIsPastOrdersOpen(false)}
+                className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+              >
+                Đóng
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+      {isConfirmModalOpen && (
+        <div className="fixed inset-0 bg-white bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-96 max-h-[80vh] overflow-y-auto relative shadow-lg">
+            <h2 className="text-xl font-bold mb-4">Xác nhận đơn hàng</h2>
+
+            <ul className="divide-y divide-gray-200 mb-4">
+              {cart.map((item, idx) => (
+                <li key={idx} className="py-2">
+                  <div className="flex justify-between">
+                    <span>{item.name} x{item.quantity}</span>
+                    <span>{getItemLineTotal(item).toLocaleString()} ₫</span>
+                  </div>
+                  {item.toppings && item.toppings.length > 0 && (
+                    <ul className="ml-4 text-sm text-gray-600">
+                      {item.toppings.filter((t: any) => t.quantity > 0).map((t: any, i: number) => (
+                        <li key={i}>
+                          - {t.name} x{t.quantity}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              ))}
+            </ul>
+
+            <div className="font-bold text-right mb-4">
+              Tổng:{" "}
+              {cart.reduce((sum, item) => sum + getLineTotal(item), 0).toLocaleString()} ₫
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setIsConfirmModalOpen(false)}
+                className="flex-1 bg-gray-200 py-2 rounded-lg hover:bg-gray-300"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={async () => {
+                  const ok = await completeOrderApi(cart);
+                  if (ok) {
+                    saveOrderToLocalStorage(cart);
+                    setLastOrder(getLastOrder());   // refresh state from storage
+                    setCart([]); // clear cart
+                    setIsCartOpen(false);
+                    setIsCompleteModalOpen(true); // open Complete modal
+                    setIsFloatingCartVisible(true);
+                  } else {
+                    alert("Đặt món thất bại, vui lòng thử lại.");
+                  }
+                }}
+                className="flex-1 bg-black text-white py-2 rounded-lg hover:bg-red-700"
+              >
+                Xác nhận
+              </button>
+
+            </div>
+          </div>
+        </div>
+      )}
+
+
+
+
       {/* ===== Complete Modal ===== */}
 
 
-{isCompleteModalOpen && lastOrder && (
-  <div className="fixed inset-0 bg-white bg-opacity-40 flex items-center justify-center z-50">
-    <div className="bg-white rounded-xl p-6 w-96 shadow-lg">
-      <h2 className="text-2xl font-bold mb-4">✅ Đặt hàng thành công!</h2>
-      
-      <div className="mb-4">
-        {lastOrder.items.map((item: any, idx: number) => (
-          <div key={idx} className="flex justify-between text-sm">
-            <span>{item.name} × {item.quantity}</span>
-            <span>{getItemLineTotal(item).toLocaleString()} đ</span>
+      {isCompleteModalOpen && lastOrder && (
+        <div className="fixed inset-0 bg-white bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-6 w-96 shadow-xl relative">
+
+            {/* Success Icon */}
+            <div className="flex justify-center mb-4">
+              <div className="bg-green-100 rounded-full p-4">
+                <span className="text-3xl">✅</span>
+              </div>
+            </div>
+
+            {/* Title */}
+            <h2 className="text-xl md:text-2xl font-bold text-center mb-4">
+              Đặt hàng thành công!
+            </h2>
+
+            {/* Order Items */}
+            <div className="mb-4 max-h-60 overflow-y-auto">
+              {lastOrder.items.map((item: any, idx: number) => (
+                <li key={idx} className="py-2">
+                <div key={idx} className="flex justify-between text-sm py-1 border-b border-gray-200">
+                  <span>{item.name} × {item.quantity}</span>
+                  <span className="font-medium">{getItemLineTotal(item).toLocaleString()} đ</span>
+                </div>
+                {item.toppings && item.toppings.length > 0 && (
+                    <ul className="ml-4 text-sm text-gray-600">
+                      {item.toppings.filter((t: any) => t.quantity > 0).map((t: any, i: number) => (
+                        <li key={i}>
+                          - {t.name} x{t.quantity}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+                
+              ))}
+            </div>
+
+            {/* Total */}
+            <div className="text-right font-bold text-lg mb-6">
+              Tổng cộng: {lastOrder.total.toLocaleString()} đ
+            </div>
+
+            {/* Buttons */}
+            <div className="flex flex-col gap-3">
+              <button
+                className="w-full py-2 bg-black text-white rounded-lg hover:bg-red-700 transition"
+                onClick={() => {
+                  setIsCompleteModalOpen(false);
+                  setIsConfirmModalOpen(false);
+                  setIsPastOrdersOpen(true);
+                }}
+              >
+                Xem lại lịch sử đặt hàng
+              </button>
+
+              <button
+                className="w-full py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition"
+                onClick={() => {
+                  setIsCompleteModalOpen(false);
+                  setIsConfirmModalOpen(false);
+                }}
+              >
+                Đóng
+              </button>
+            </div>
+
           </div>
-        ))}
-      </div>
+        </div>
+      )}
 
-      <div className="font-bold text-lg text-right">
-        Tổng cộng: {lastOrder.total.toLocaleString()} đ
-      </div>
-
-      <button
-        onClick={() => setIsCompleteModalOpen(false)}
-        className="mt-6 w-full bg-black text-white py-2 rounded-lg hover:bg-red-700"
-      >
-        Đóng
-      </button>
-    </div>
-  </div>
-)}
 
 
 

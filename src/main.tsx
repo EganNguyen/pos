@@ -9,6 +9,7 @@ import Kitchen from "./Kitchen";
 import ErrorPage from "./Error";
 import LoginPage from "./Login";
 import Cashier from "./Billing";
+import PastOrders from "./PastOrders";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -20,6 +21,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <Route path="/error" element={<ErrorPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/billing" element={<Cashier />} />
+        <Route path="/past" element={<PastOrders />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
